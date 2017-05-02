@@ -1,9 +1,5 @@
 package cn.com.venvy.common.interf;
 
-import java.util.List;
-
-import cn.com.live.videopls.venvy.domain.QoptionsBean;
-
 /**
  * 投票接口
  * IVote<D>更新的所需的数据</D>
