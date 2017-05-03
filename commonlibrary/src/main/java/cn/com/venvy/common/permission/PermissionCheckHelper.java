@@ -192,6 +192,7 @@ public class PermissionCheckHelper {
         if (requestInfo == null) {
             isRequesting = false;
         }
+
         return requestInfo;
     }
 
