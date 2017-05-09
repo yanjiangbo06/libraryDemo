@@ -31,8 +31,12 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile 'com.android.support:appcompat-v7:25.1.1'
-    testCompile 'junit:junit:4.12'
+    compile 'com.android.support:appcompat-v7:25.3.1'
+    // 其他依赖
+    provided 'com.facebook.fresco:fresco:1.1.0'
+    // 支持 GIF 动图，需要添加
+    provided 'com.facebook.fresco:animated-gif:1.1.0'
+    provided 'com.github.bumptech.glide:glide:3.7.0'
 }
 
 

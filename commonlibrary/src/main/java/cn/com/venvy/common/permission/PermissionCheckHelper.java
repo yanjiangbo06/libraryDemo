@@ -2,6 +2,7 @@ package cn.com.venvy.common.permission;
 
 import android.app.AppOpsManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Process;
@@ -128,15 +129,15 @@ public class PermissionCheckHelper {
     private synchronized void enqueueRequest(Context context, PermissionRequestInfo requestInfo) {
         requestList.add(requestInfo);
         if (!isRequesting) {
-//            try {
-//                Intent intent = new Intent(context, PermissionHandlerActivity.class);
-//                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//                context.getApplicationContext().startActivity(intent);
-//                isRequesting = true;
-//            } catch (Exception ex){
-//                VenvyLog.d(TAG, "permission handle activity start failed!");
-//                isRequesting = false;
-//            }
+            try {
+                Intent intent = new Intent(context, PermissionHandlerActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.getApplicationContext().startActivity(intent);
+                isRequesting = true;
+            } catch (Exception ex){
+                VenvyLog.d(TAG, "permission handle activity start failed!");
+                isRequesting = false;
+            }
         }
     }
 

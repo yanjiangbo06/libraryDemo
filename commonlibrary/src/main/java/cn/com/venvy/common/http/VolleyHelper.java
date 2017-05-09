@@ -9,7 +9,6 @@ import cn.com.venvy.common.http.base.Request;
 
 class VolleyHelper extends BaseRequestConnect {
 
-
     @Override
     public void get(Request request) {
 
@@ -17,6 +16,16 @@ class VolleyHelper extends BaseRequestConnect {
 
     @Override
     public void post(Request request) {
+
+    }
+
+    @Override
+    public void put(Request request) {
+
+    }
+
+    @Override
+    public void delete(Request request) {
 
     }
 

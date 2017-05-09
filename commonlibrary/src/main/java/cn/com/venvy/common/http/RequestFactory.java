@@ -1,7 +1,5 @@
 package cn.com.venvy.common.http;
 
-import android.content.Context;
-
 import cn.com.venvy.common.http.base.IRequestConnect;
 
 /**
@@ -9,6 +7,7 @@ import cn.com.venvy.common.http.base.IRequestConnect;
  */
 
 public class RequestFactory {
+
 
     public enum HttpPlugin {
         OK_HTTP,
@@ -19,11 +18,15 @@ public class RequestFactory {
         IRequestConnect connect = null;
         switch (plugin) {
             case OK_HTTP:
-                connect = new OkHttpHelper();
+                OkHttpHelper okHttpHelper = new OkHttpHelper();
+                okHttpHelper.init();
+                connect = okHttpHelper;
                 break;
 
             case VOLLEY:
-                connect = new VolleyHelper();
+                VolleyHelper volleyHelper = new VolleyHelper();
+                volleyHelper.init();
+                connect = volleyHelper;
                 break;
         }
         return connect;

@@ -6,33 +6,33 @@ package cn.com.venvy;
 
 public class PlatformInfo {
 
-    final String sdkVersion;
-    final String thirdPlatformId;
-    final String serviceVersion;
+    final String mSdkVersion;
+    final String mThirdPlatformId;
+    final String mServiceVersion;
 
     private PlatformInfo(Builder builder) {
-        sdkVersion = builder.sdkVersion;
-        thirdPlatformId = builder.thirdPlatformId;
-        serviceVersion = builder.serviceVersion;
+        mSdkVersion = builder.mSdkVersion;
+        mThirdPlatformId = builder.mThirdPlatformId;
+        mServiceVersion = builder.mServiceVersion;
     }
 
     public String getSdkVersion() {
-        return sdkVersion;
+        return mSdkVersion;
     }
 
     public String getThirdPlatformId() {
-        return thirdPlatformId;
+        return mThirdPlatformId;
     }
 
     public String getServiceVersion() {
-        return serviceVersion;
+        return mServiceVersion;
     }
 
     public static class Builder {
 
-        private String sdkVersion;
-        private String thirdPlatformId;
-        public String serviceVersion;
+        private String mSdkVersion;
+        private String mThirdPlatformId;
+        private String mServiceVersion;
 
         /**
          * 设置当前SDK发布版本号
@@ -40,7 +40,7 @@ public class PlatformInfo {
          * @return
          */
         public Builder setSdkVersion(String sdkVersion) {
-            this.sdkVersion = sdkVersion;
+            this.mSdkVersion = sdkVersion;
             return this;
         }
 
@@ -50,7 +50,7 @@ public class PlatformInfo {
          * @return
          */
         public Builder setThirdPlatform(String thirdPlatformId) {
-            this.thirdPlatformId = thirdPlatformId;
+            this.mThirdPlatformId = thirdPlatformId;
             return this;
         }
 
@@ -60,7 +60,7 @@ public class PlatformInfo {
          * @return
          */
         public Builder setServiceVersion(String serviceVersion) {
-            this.serviceVersion = serviceVersion;
+            this.mServiceVersion = serviceVersion;
             return this;
         }
 
