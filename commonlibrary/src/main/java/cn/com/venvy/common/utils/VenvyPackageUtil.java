@@ -23,7 +23,4 @@ public class VenvyPackageUtil {
         return context.getPackageName();
     }
 
-    public static String getSDKVersion(Context context) {
-        return "1.0.0";
-    }
 }

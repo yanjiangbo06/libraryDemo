@@ -30,12 +30,12 @@ class VolleyHelper extends BaseRequestConnect {
     }
 
     @Override
-    public boolean abort(Request request) {
-        return super.abort(request);
+    public void abortRequest(Request request) {
+
     }
 
     @Override
-    public boolean abortAll() {
-        return super.abortAll();
+    public void abortAllRequest() {
+
     }
 }

@@ -1,7 +1,8 @@
 package cn.com.venvy;
 
 import android.content.Context;
-import android.support.annotation.Nullable;
+
+import cn.com.venvy.common.image.ImageFactory;
 
 /**
  * Created by yanjiangbo on 2017/5/2.
@@ -36,9 +37,13 @@ public class Platform {
         if (application != null) {
             mApplicationContext = application.getApplication();
         }
+
+        PlatformInfo info = new PlatformInfo.Builder().setBuId("OTT").setSdkVersion("").builder();
+        Platform.instance().init(info);
     }
 
     public Context getContext() {
         return mApplicationContext;
     }
+
 }

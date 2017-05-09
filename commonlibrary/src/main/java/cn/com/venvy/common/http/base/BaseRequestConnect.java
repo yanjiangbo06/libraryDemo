@@ -66,6 +66,7 @@ public abstract class BaseRequestConnect implements IRequestConnect {
             VenvyLog.w("request can't be null, please check");
             return false;
         }
+        abortRequest(request);
         if (requestCallBackArray.get(request.mRequestId) != null) {
             requestCallBackArray.delete(request.mRequestId);
             return true;
@@ -76,6 +77,7 @@ public abstract class BaseRequestConnect implements IRequestConnect {
 
     public boolean abortAll() {
         requestCallBackArray.clear();
+        abortAllRequest();
         return true;
     }
 
@@ -105,6 +107,10 @@ public abstract class BaseRequestConnect implements IRequestConnect {
 
     public abstract void delete(Request request);
 
+    public abstract void abortRequest(Request request);
+
+    public abstract void abortAllRequest();
+
     private static final String VERSION = "version";
     private static final String SDK_VERSION = "sdk-version";
     private static final String USER_AGENT = "user-agent";
@@ -115,6 +121,8 @@ public abstract class BaseRequestConnect implements IRequestConnect {
     private static final String NETWORK = "network";
     private static final String PLATFORM_ID = "platform-id";
     private static final String CYTRON_VERSION = "cytory-version";
+    private static final String LAUGUAGE = "language";
+    private static final String BU = "bu-id";
 
     private HashMap<String, String> buildDefaultUrlHeaders() {
         HashMap<String, String> headers = new HashMap<>();
@@ -124,8 +132,8 @@ public abstract class BaseRequestConnect implements IRequestConnect {
             try {
                 headers.put(VERSION, VenvyPackageUtil.getPackageVersion(context));
                 headers.put(UDID, VenvyDeviceUtil.getDeviceUuid(context).toString());
-                headers.put(TOKEN, "");
                 headers.put(NETWORK, VenvyDeviceUtil.getNetWorkName(context));
+                headers.put(LAUGUAGE, VenvyDeviceUtil.getLanguage(context));
             } catch (PackageManager.NameNotFoundException e) {
                 VenvyLog.e(TAG, e);
             }
@@ -134,8 +142,9 @@ public abstract class BaseRequestConnect implements IRequestConnect {
             headers.put(SDK_VERSION, platformInfo.getSdkVersion());
             headers.put(PLATFORM_ID, platformInfo.getThirdPlatformId());
             headers.put(CYTRON_VERSION, platformInfo.getServiceVersion());
+            headers.put(BU, platformInfo.getBuId());
         }
-
+        headers.put(TOKEN, "");
         headers.put(USER_AGENT, VenvyDeviceUtil.getUserAgent());
         headers.put(OS_VERSION, VenvyDeviceUtil.getOsVersion());
         headers.put(IP, VenvyDeviceUtil.getLocalIPAddress());

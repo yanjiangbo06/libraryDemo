@@ -1,16 +1,24 @@
 package cn.com.venvy.common.report;
 
-import android.content.Context;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by yanjiangbo on 2017/5/4.
  */
 
-public class TrackReport extends Report {
+class TrackReport extends Report {
 
-    @Override
-    public void report(String reportString) {
-
-
+    public static void report(ReportInfo reportInfo) {
+        List<ReportInfo> list = getReportInfoList();
+        if (list == null) {
+            list = new ArrayList<>();
+        }
+        list.add(reportInfo);
+        if (list.size() >= MAX_CACHE_NUM) {
+            startReport(list);
+        } else {
+            cacheReportInfo(list);
+        }
     }
 }

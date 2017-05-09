@@ -21,6 +21,7 @@ public abstract class BaseModel {
     public BaseModel() {
         mConnect = createRequestConnect();
         mImageLoader = createImageLoader();
+
     }
 
     public void startRequest(Request request, IRequestHandler handler) {
@@ -32,15 +33,7 @@ public abstract class BaseModel {
     }
 
     public void displayImage(ImageView imageView, String url) {
-        if (getImageLoader() != null) {
-            getImageLoader().loadImage(imageView, url);
-        } else {
-            VenvyLog.e("ImageLoader", new NullPointerException("the imageloader is null"));
-        }
-    }
-
-    public IImageLoader getImageLoader() {
-        return mImageLoader;
+        ImageFactory.loadImage(imageView, url);
     }
 
     public IRequestConnect getRequestConnect() {
@@ -48,12 +41,12 @@ public abstract class BaseModel {
     }
 
     protected IRequestConnect createRequestConnect() {
-        RequestFactory factory = new RequestFactory();
-        return factory.createConnect(RequestFactory.HttpPlugin.VOLLEY);
+        RequestFactory.initConnect(RequestFactory.HttpPlugin.OK_HTTP);
+        return RequestFactory.getRequestConnect();
     }
 
     protected IImageLoader createImageLoader() {
-        ImageFactory factory = new ImageFactory();
-        return factory.createImageLoader(ImageFactory.ImageLoaderType.Fresco);
+        ImageFactory.initImageLoader(ImageFactory.ImageLoaderType.Fresco);
+        return ImageFactory.getImageLoader();
     }
 }

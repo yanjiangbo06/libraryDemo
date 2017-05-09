@@ -128,7 +128,6 @@ class OkHttpHelper extends BaseRequestConnect {
         startConnect(builder.build(), request);
     }
 
-
     private void startConnect(final cn.com.venvy.okhttp3.Request okRequest, final Request request) {
 
         final IRequestHandler handler = (IRequestHandler) getAllCallback().get(request.mRequestId);
@@ -178,17 +177,15 @@ class OkHttpHelper extends BaseRequestConnect {
     }
 
     @Override
-    public boolean abort(Request request) {
+    public void abortRequest(Request request) {
         Call call = callSparseArray.get(request.mRequestId);
         if (call != null) {
             call.cancel();
         }
-        return super.abort(request);
     }
 
     @Override
-    public boolean abortAll() {
+    public void abortAllRequest() {
         okHttpClient.dispatcher().cancelAll();
-        return super.abortAll();
     }
 }
