@@ -35,7 +35,7 @@ public abstract class BaseController {
         }
         HashMap<String, String> params = new HashMap<>();
         params.put("pa", "222");
-        Request request = HttpRequest.get(mWeakReference.get().getContext(), "", params);
+        Request request = HttpRequest.get("", params);
         mBaseModel.startRequest(request, new IRequestHandler() {
             @Override
             public void requestFinish(Request request, IResponse response) {

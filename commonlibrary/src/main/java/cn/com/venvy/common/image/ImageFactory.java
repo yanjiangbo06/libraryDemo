@@ -1,6 +1,5 @@
 package cn.com.venvy.common.image;
 
-import android.content.Context;
 
 /**
  * Created by yanjiangbo on 2017/5/2.
@@ -13,15 +12,15 @@ public class ImageFactory {
         Glide
     }
 
-    public IImageLoader createImageLoader(Context context, ImageLoaderType type) {
+    public IImageLoader createImageLoader(ImageLoaderType type) {
         IImageLoader imageLoader = null;
         switch (type) {
             case Glide:
-                imageLoader = new GlideImageLoader(context);
+                imageLoader = new GlideImageLoader();
                 break;
 
             case Fresco:
-                imageLoader = new FrescoImageLoader(context);
+                imageLoader = new FrescoImageLoader();
                 break;
         }
         return imageLoader;

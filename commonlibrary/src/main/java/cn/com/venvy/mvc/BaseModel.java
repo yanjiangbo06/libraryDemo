@@ -1,6 +1,5 @@
 package cn.com.venvy.mvc;
 
-import android.content.Context;
 import android.widget.ImageView;
 
 import cn.com.venvy.common.http.RequestFactory;
@@ -19,9 +18,9 @@ public abstract class BaseModel {
     private IRequestConnect mConnect;
     private IImageLoader mImageLoader;
 
-    public BaseModel(Context context) {
+    public BaseModel() {
         mConnect = createRequestConnect();
-        mImageLoader = createImageLoader(context);
+        mImageLoader = createImageLoader();
     }
 
     public void startRequest(Request request, IRequestHandler handler) {
@@ -53,8 +52,8 @@ public abstract class BaseModel {
         return factory.createConnect(RequestFactory.HttpPlugin.VOLLEY);
     }
 
-    protected IImageLoader createImageLoader(Context context) {
+    protected IImageLoader createImageLoader() {
         ImageFactory factory = new ImageFactory();
-        return factory.createImageLoader(context, ImageFactory.ImageLoaderType.Fresco);
+        return factory.createImageLoader(ImageFactory.ImageLoaderType.Fresco);
     }
 }

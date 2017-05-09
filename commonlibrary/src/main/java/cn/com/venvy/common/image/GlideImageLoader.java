@@ -7,14 +7,14 @@ import android.widget.ImageView;
  * Created by yanjiangbo on 2017/5/2.
  */
 
- class GlideImageLoader implements IImageLoader {
-
-    public GlideImageLoader(Context context) {
-
-    }
+class GlideImageLoader implements IImageLoader {
 
     @Override
     public void loadImage(ImageView imageView, String url) {
         Context context = imageView.getContext();
+    }
+
+    public void loadImage(ImageView imageView, String fileName, boolean isFile) {
+
     }
 }

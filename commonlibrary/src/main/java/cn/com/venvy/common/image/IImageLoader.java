@@ -8,4 +8,7 @@ import android.widget.ImageView;
 
 public interface IImageLoader {
     void loadImage(ImageView imageView, String url);
+
+    void loadImage(ImageView imageView, String fileName, boolean isFile);
+
 }
