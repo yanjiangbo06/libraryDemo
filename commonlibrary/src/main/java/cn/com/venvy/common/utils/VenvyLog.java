@@ -6,8 +6,8 @@ import android.util.Log;
 
 
 /**
- * Log统一管理类，提供了打开{@link #enableLogging()} 或{@link Debug#writeDebugLogs(boolean)}
- * 和关闭Log的方法{@link Debug#disableLogging()},方便SDK管理自己的Log系统；同时使用方
+ * Log统一管理类，提供了打开{@link #enableLogging()} 或{@link VenvyDebug#writeDebugLogs(boolean)}
+ * 和关闭Log的方法{@link VenvyDebug#disableLogging()},方便SDK管理自己的Log系统；同时使用方
  * 也可调用{@link #setTag(String)} 方法设置log的tag
  * Created by YanQiu on 2017/4/26.
  */
@@ -26,13 +26,13 @@ public class VenvyLog {
      * @param msg The message you would like logged.
      */
     public static void v(String tag, String msg) {
-        if (Debug.venvyDebug) {
+        if (VenvyDebug.venvyDebug) {
             Log.v(venvyLogTag + ":" + tag, buildMessage(msg));
         }
     }
 
     public static void v(String msg) {
-        if (Debug.venvyDebug) {
+        if (VenvyDebug.venvyDebug) {
             Log.v(venvyLogTag, buildMessage(msg));
         }
     }
@@ -44,19 +44,19 @@ public class VenvyLog {
      * @param throwable An exception to log
      */
     public static void v(String tag, String msg, Throwable throwable) {
-        if (Debug.venvyDebug) {
+        if (VenvyDebug.venvyDebug) {
             Log.v(venvyLogTag + ":" + tag, buildMessage(msg), throwable);
         }
     }
 
     public static void v(String msg, Throwable throwable) {
-        if (Debug.venvyDebug) {
+        if (VenvyDebug.venvyDebug) {
             Log.v(venvyLogTag, buildMessage(msg), throwable);
         }
     }
 
     public static void e(String msg) {
-        if (Debug.venvyDebug) {
+        if (VenvyDebug.venvyDebug) {
             Log.e(venvyLogTag, buildMessage(msg));
         }
     }
@@ -67,13 +67,13 @@ public class VenvyLog {
      * @param msg The message you would like logged.
      */
     public static void d(String tag, String msg) {
-        if (Debug.venvyDebug) {
+        if (VenvyDebug.venvyDebug) {
             Log.d(venvyLogTag + ":" + tag, buildMessage(msg));
         }
     }
 
     public static void d(String msg) {
-        if (Debug.venvyDebug) {
+        if (VenvyDebug.venvyDebug) {
             Log.d(venvyLogTag, buildMessage(msg));
         }
     }
@@ -85,13 +85,13 @@ public class VenvyLog {
      * @param throwable An exception to log
      */
     public static void d(String tag, String msg, Throwable throwable) {
-        if (Debug.venvyDebug) {
+        if (VenvyDebug.venvyDebug) {
             Log.d(venvyLogTag + ":" + tag, buildMessage(msg), throwable);
         }
     }
 
     public static void d(String msg, Throwable throwable) {
-        if (Debug.venvyDebug) {
+        if (VenvyDebug.venvyDebug) {
             Log.d(venvyLogTag, buildMessage(msg), throwable);
         }
     }
@@ -102,13 +102,13 @@ public class VenvyLog {
      * @param msg The message you would like logged.
      */
     public static void i(String tag, String msg) {
-        if (Debug.venvyDebug) {
+        if (VenvyDebug.venvyDebug) {
             Log.i(venvyLogTag + ":" + tag, buildMessage(msg));
         }
     }
 
     public static void i(String msg) {
-        if (Debug.venvyDebug) {
+        if (VenvyDebug.venvyDebug) {
             Log.i(venvyLogTag, buildMessage(msg));
         }
     }
@@ -120,13 +120,13 @@ public class VenvyLog {
      * @param throwable An exception to log
      */
     public static void i(String tag, String msg, Throwable throwable) {
-        if (Debug.venvyDebug) {
+        if (VenvyDebug.venvyDebug) {
             Log.i(venvyLogTag + ":" + tag, buildMessage(msg), throwable);
         }
     }
 
     public static void i(String msg, Throwable throwable) {
-        if (Debug.venvyDebug) {
+        if (VenvyDebug.venvyDebug) {
             Log.i(venvyLogTag, buildMessage(msg), throwable);
         }
     }
@@ -137,13 +137,13 @@ public class VenvyLog {
      * @param msg The message you would like logged.
      */
     public static void w(String tag, String msg) {
-        if (Debug.venvyDebug) {
+        if (VenvyDebug.venvyDebug) {
             Log.w(venvyLogTag + ":" + tag, buildMessage(msg));
         }
     }
 
     public static void w(String msg) {
-        if (Debug.venvyDebug) {
+        if (VenvyDebug.venvyDebug) {
             Log.w(venvyLogTag, buildMessage(msg));
         }
     }
@@ -155,13 +155,13 @@ public class VenvyLog {
      * @param throwable An exception to log
      */
     public static void w(String tag, String msg, Throwable throwable) {
-        if (Debug.venvyDebug) {
+        if (VenvyDebug.venvyDebug) {
             Log.w(venvyLogTag + ":" + tag, buildMessage(msg), throwable);
         }
     }
 
     public static void w(String msg, Throwable throwable) {
-        if (Debug.venvyDebug) {
+        if (VenvyDebug.venvyDebug) {
             Log.w(venvyLogTag, buildMessage(msg), throwable);
         }
     }
@@ -172,7 +172,7 @@ public class VenvyLog {
      * @param msg The message you would like logged.
      */
     public static void e(String tag, String msg) {
-        if (Debug.venvyDebug) {
+        if (VenvyDebug.venvyDebug) {
             Log.e(venvyLogTag + ":" + tag, buildMessage(msg));
         }
     }
@@ -184,13 +184,13 @@ public class VenvyLog {
      * @param throwable An exception to log
      */
     public static void e(String tag, String msg, Throwable throwable) {
-        if (Debug.venvyDebug) {
+        if (VenvyDebug.venvyDebug) {
             Log.e(venvyLogTag + ":" + tag, buildMessage(msg), throwable);
         }
     }
 
     public static void e(String msg, Throwable throwable) {
-        if (Debug.venvyDebug) {
+        if (VenvyDebug.venvyDebug) {
             Log.e(venvyLogTag, buildMessage(msg), throwable);
         }
     }

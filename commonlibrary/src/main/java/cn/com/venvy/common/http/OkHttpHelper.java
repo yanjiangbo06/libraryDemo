@@ -11,6 +11,7 @@ import cn.com.venvy.common.http.base.IRequestHandler;
 import cn.com.venvy.common.http.base.IResponse;
 import cn.com.venvy.common.http.base.Request;
 import cn.com.venvy.common.http.base.RequestType;
+import cn.com.venvy.common.utils.VenvyLog;
 import cn.com.venvy.okhttp3.Call;
 import cn.com.venvy.okhttp3.Callback;
 import cn.com.venvy.okhttp3.FormBody;
@@ -143,6 +144,7 @@ class OkHttpHelper extends BaseRequestConnect {
                     handler.requestFinish(request, new OKHttpResponse(response));
                 }
                 removeCallback(request);
+                VenvyLog.i(TAG, "request end, url = " + request.url);
             }
 
             @Override
@@ -151,6 +153,7 @@ class OkHttpHelper extends BaseRequestConnect {
                 if (handler != null) {
                     handler.requestError(request, e);
                 }
+                VenvyLog.i(TAG, "request error, url = " + request.url);
             }
         });
         callSparseArray.put(request.mRequestId, call);

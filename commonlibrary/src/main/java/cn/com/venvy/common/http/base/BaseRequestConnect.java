@@ -20,7 +20,7 @@ import cn.com.venvy.common.utils.VenvyUIUtil;
 
 public abstract class BaseRequestConnect implements IRequestConnect {
 
-    private static final String TAG = "BaseRequestConnect";
+    protected static final String TAG = "BaseRequestConnect";
 
     private volatile SparseArray<IRequestHandler> requestCallBackArray = new SparseArray<>();
 
@@ -59,6 +59,7 @@ public abstract class BaseRequestConnect implements IRequestConnect {
         } else if (request.mRequestType == RequestType.DELETE) {
             delete(request);
         }
+        VenvyLog.i(TAG,"start Request, Url = " + request.url);
     }
 
     public boolean abort(Request request) {

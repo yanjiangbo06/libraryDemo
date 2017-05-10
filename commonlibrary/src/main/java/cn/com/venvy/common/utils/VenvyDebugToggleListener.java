@@ -1,6 +1,5 @@
 package cn.com.venvy.common.utils;
 
-import android.os.SystemClock;
 import android.view.View;
 
 /**
@@ -10,6 +9,6 @@ import android.view.View;
 public class VenvyDebugToggleListener implements View.OnClickListener{
     @Override
     public void onClick(View v) {
-        Debug.getInstance().toggle();
+        VenvyDebug.getInstance().toggle();
     }
 }

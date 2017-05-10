@@ -1,14 +1,13 @@
 package cn.com.venvy.common.utils;
 
-import android.content.Context;
-import android.text.TextUtils;
-
 import java.math.RoundingMode;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /***
  * 判断是否是网站
@@ -16,6 +15,32 @@ import java.util.Date;
  *
  */
 public class VenvyStringUtil {
+
+
+    /**
+     * 校验是否是手机号
+     *
+     * @param phone
+     * @return
+     */
+    public static boolean isPhone(String phone) {
+        Pattern p = Pattern.compile("^((13[0-9])|(15[0-9])|(18[0-9])|17[0-9])\\d{8}$");
+        Matcher m = p.matcher(phone);
+        return m.matches();
+    }
+
+    /**
+     * 校验是否是邮箱
+     *
+     * @param
+     * @return
+     */
+    public static boolean isEmail(String email) {
+        Pattern p = Pattern.compile("^(\\w)+(\\.\\w+)*@(\\w)+((\\.\\w+)+)$");
+        Matcher m = p.matcher(email);
+        return m.matches();
+    }
+
     /***
      *
      * @param num 当前

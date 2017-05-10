@@ -2,7 +2,6 @@ package cn.com.venvy.common.report;
 
 import android.text.TextUtils;
 
-
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
@@ -17,6 +16,8 @@ import cn.com.venvy.common.http.base.IRequestHandler;
 import cn.com.venvy.common.http.base.IResponse;
 import cn.com.venvy.common.http.base.Request;
 import cn.com.venvy.common.utils.VenvyAesUtil;
+import cn.com.venvy.common.utils.VenvyAsyncTaskUtil;
+import cn.com.venvy.common.utils.VenvyBase64;
 import cn.com.venvy.common.utils.VenvyLog;
 
 /**
@@ -29,6 +30,7 @@ public class Report {
     protected static final String REPORT_AES_IV = "";
     protected static final String REPORT_URL = "";
     protected static final String REPORT_SERVER_KEY = "info";
+    protected static final String KEY_ASYNC_TASK = "Report_report";
 
     protected static final int MAX_CACHE_NUM = 5;
 
@@ -63,15 +65,22 @@ public class Report {
         }
     }
 
-    public static void report(ReportLevel level, String reportString) {
-        ReportInfo reportInfo = new ReportInfo();
-        reportInfo.leave = level;
-        reportInfo.message = reportString;
-        if (level == ReportLevel.e) {
-            CrashReport.report(reportInfo);
-        } else {
-            TrackReport.report(reportInfo);
-        }
+    public static void report(final ReportLevel level, final String reportString) {
+        VenvyAsyncTaskUtil.doAsyncTask(KEY_ASYNC_TASK, new VenvyAsyncTaskUtil.IDoAsyncTask<Void, Void>() {
+            @Override
+            public Void doAsyncTask(Void... strings) throws Exception {
+                ReportInfo reportInfo = new ReportInfo();
+                reportInfo.leave = level;
+                reportInfo.message = reportString;
+                if (level == ReportLevel.e) {
+                    CrashReport.report(reportInfo);
+                } else {
+                    TrackReport.report(reportInfo);
+                }
+                return null;
+            }
+        }, null);
+
     }
 
     public static void report(Exception e) {
@@ -80,7 +89,9 @@ public class Report {
 
     protected static void startReport(final List<ReportInfo> list) {
         HashMap<String, String> params = new HashMap<>();
-        params.put(REPORT_SERVER_KEY, VenvyAesUtil.encrypt(reportInfoListToString(list), REPORT_AES_KEY, REPORT_AES_IV));
+        String signParams = VenvyAesUtil.encrypt(reportInfoListToString(list), REPORT_AES_KEY, REPORT_AES_IV);
+        String baseRequstSign = VenvyBase64.encode(signParams.getBytes());
+        params.put(REPORT_SERVER_KEY, baseRequstSign);
         Request request = HttpRequest.put(REPORT_URL, params);
         RequestFactory.getRequestConnect().connect(request, new IRequestHandler() {
             @Override
@@ -122,11 +133,8 @@ public class Report {
     }
 
     protected static void cacheReportInfo(List<ReportInfo> infoList) {
-        if (infoList == null) {
+        if (infoList == null || infoList.size() == 0) {
             return;
-        }
-        if (infoList.size() == 0) {
-            clearCache();
         }
         saveToFile(reportInfoListToString(infoList));
     }

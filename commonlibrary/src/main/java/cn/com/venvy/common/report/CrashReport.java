@@ -1,14 +1,7 @@
 package cn.com.venvy.common.report;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-
-import cn.com.venvy.common.http.HttpRequest;
-import cn.com.venvy.common.http.base.IRequestHandler;
-import cn.com.venvy.common.http.base.IResponse;
-import cn.com.venvy.common.http.base.Request;
-import cn.com.venvy.common.utils.VenvyAesUtil;
 
 /**
  * Created by yanjiangbo on 2017/5/4.

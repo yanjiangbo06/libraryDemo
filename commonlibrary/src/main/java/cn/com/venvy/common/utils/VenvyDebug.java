@@ -6,19 +6,19 @@ import android.os.SystemClock;
  * Created by Arthur on 2017/4/28.
  */
 
-public class Debug {
+public class VenvyDebug {
     private long[] mHits;
-    private static Debug instance;
+    private static VenvyDebug instance;
     public static volatile boolean venvyDebug = true;
 
-    public static Debug getInstance() {
+    public static VenvyDebug getInstance() {
         if (null == instance) {
-            instance = new Debug();
+            instance = new VenvyDebug();
         }
         return instance;
     }
 
-    private Debug() {
+    private VenvyDebug() {
         mHits = new long[5];
     }
 
