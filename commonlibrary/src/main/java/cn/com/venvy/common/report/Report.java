@@ -19,6 +19,7 @@ import cn.com.venvy.common.utils.VenvyAesUtil;
 import cn.com.venvy.common.utils.VenvyAsyncTaskUtil;
 import cn.com.venvy.common.utils.VenvyBase64;
 import cn.com.venvy.common.utils.VenvyLog;
+import cn.com.venvy.common.utils.VenvyUIUtil;
 
 /**
  * Created by yanjiangbo on 2017/5/4.
@@ -26,13 +27,17 @@ import cn.com.venvy.common.utils.VenvyLog;
 
 public class Report {
 
-    protected static final String REPORT_AES_KEY = "";
-    protected static final String REPORT_AES_IV = "";
-    protected static final String REPORT_URL = "";
-    protected static final String REPORT_SERVER_KEY = "info";
-    protected static final String KEY_ASYNC_TASK = "Report_report";
+    private static final String REPORT_AES_KEY = "";
+    private static final String REPORT_AES_IV = "";
+    private static final String REPORT_URL = "";
+    private static final String REPORT_SERVER_KEY = "info";
+    private static final String KEY_ASYNC_TASK = "Report_report";
 
-    protected static final int MAX_CACHE_NUM = 5;
+    //最大缓存条数
+    static final int MAX_CACHE_NUM = 5;
+
+    //轮询时间间隔
+    private static final int POLLING_TIME = 1000 * 60 * 5;
 
     public enum ReportLevel {
 
@@ -65,7 +70,14 @@ public class Report {
         }
     }
 
+    public static void init() {
+        startPolling();
+    }
+
     public static void report(final ReportLevel level, final String reportString) {
+        if (level == null || TextUtils.isEmpty(reportString)) {
+            return;
+        }
         VenvyAsyncTaskUtil.doAsyncTask(KEY_ASYNC_TASK, new VenvyAsyncTaskUtil.IDoAsyncTask<Void, Void>() {
             @Override
             public Void doAsyncTask(Void... strings) throws Exception {
@@ -80,18 +92,24 @@ public class Report {
                 return null;
             }
         }, null);
-
     }
 
     public static void report(Exception e) {
         CrashReport.report(e);
     }
 
-    protected static void startReport(final List<ReportInfo> list) {
+    private static void reportCache() {
+        TrackReport.reportCache();
+    }
+
+    static void startReport(final List<ReportInfo> list) {
+        if (list == null || list.size() == 0) {
+            return;
+        }
         HashMap<String, String> params = new HashMap<>();
         String signParams = VenvyAesUtil.encrypt(reportInfoListToString(list), REPORT_AES_KEY, REPORT_AES_IV);
-        String baseRequstSign = VenvyBase64.encode(signParams.getBytes());
-        params.put(REPORT_SERVER_KEY, baseRequstSign);
+        String baseRequestSign = VenvyBase64.encode(signParams.getBytes());
+        params.put(REPORT_SERVER_KEY, baseRequestSign);
         Request request = HttpRequest.put(REPORT_URL, params);
         RequestFactory.initConnect(RequestFactory.HttpPlugin.OK_HTTP).connect(request, new IRequestHandler() {
             @Override
@@ -105,12 +123,12 @@ public class Report {
 
             @Override
             public void requestError(Request request, Exception e) {
-                cacheReportInfo(list);
+
             }
 
             @Override
             public void startRequest(Request request) {
-
+                cacheReportInfo(list);
             }
 
             @Override
@@ -132,14 +150,14 @@ public class Report {
         }
     }
 
-    protected static void cacheReportInfo(List<ReportInfo> infoList) {
+    static void cacheReportInfo(List<ReportInfo> infoList) {
         if (infoList == null || infoList.size() == 0) {
             return;
         }
         saveToFile(reportInfoListToString(infoList));
     }
 
-    protected static List<ReportInfo> getReportInfoList() {
+    static List<ReportInfo> getReportInfoList() {
         String cacheString = getByFile();
         if (TextUtils.isEmpty(cacheString)) {
             return null;
@@ -158,11 +176,11 @@ public class Report {
         return list;
     }
 
-    protected static void clearCache() {
+    private static void clearCache() {
 
     }
 
-    protected static String reportInfoListToString(List<ReportInfo> infoList) {
+    private static String reportInfoListToString(List<ReportInfo> infoList) {
         if (infoList == null || infoList.size() == 0) {
             return null;
         }
@@ -188,7 +206,7 @@ public class Report {
         }
         String cacheString = getByFile();
         try {
-            JSONArray jsonArray = null;
+            JSONArray jsonArray;
             if (!TextUtils.isEmpty(cacheString)) {
                 jsonArray = JSONArray.parseArray(cacheString);
             } else {
@@ -212,4 +230,16 @@ public class Report {
         return null;
     }
 
+    /**
+     * 每隔一段时间主动上抛一次数据
+     */
+    private static void startPolling() {
+        Report.reportCache();
+        VenvyUIUtil.runOnUIThreadDelay(new Runnable() {
+            @Override
+            public void run() {
+                startPolling();
+            }
+        }, POLLING_TIME);
+    }
 }

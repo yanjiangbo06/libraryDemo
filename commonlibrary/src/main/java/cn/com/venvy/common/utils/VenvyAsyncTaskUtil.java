@@ -126,8 +126,7 @@ public class VenvyAsyncTaskUtil {
         public abstract Result doAsyncTask(Param... params) throws Exception;
     }
 
-    public abstract static class CommonAsyncCallback<Result>
-            implements IAsyncCallback<Result> {
+    public abstract class CommonAsyncCallback<Result> implements IAsyncCallback<Result> {
 
         @Override
         public void onPreExecute() {

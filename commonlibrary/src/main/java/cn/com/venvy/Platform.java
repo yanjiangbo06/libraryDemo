@@ -3,6 +3,7 @@ package cn.com.venvy;
 import android.content.Context;
 
 import cn.com.venvy.common.image.ImageFactory;
+import cn.com.venvy.common.report.Report;
 
 /**
  * Created by yanjiangbo on 2017/5/2.
@@ -27,6 +28,7 @@ public class Platform {
         if (platformInfo != null) {
             mPlatformInfo = platformInfo;
         }
+        Report.init();
     }
 
     public PlatformInfo getPlatformInfo() {
