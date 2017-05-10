@@ -41,8 +41,7 @@ public abstract class BaseModel {
     }
 
     protected IRequestConnect createRequestConnect() {
-        RequestFactory.initConnect(RequestFactory.HttpPlugin.OK_HTTP);
-        return RequestFactory.getRequestConnect();
+        return RequestFactory.initConnect(RequestFactory.HttpPlugin.OK_HTTP);
     }
 
     protected IImageLoader createImageLoader() {

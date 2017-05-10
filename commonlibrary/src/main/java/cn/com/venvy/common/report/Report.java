@@ -93,7 +93,7 @@ public class Report {
         String baseRequstSign = VenvyBase64.encode(signParams.getBytes());
         params.put(REPORT_SERVER_KEY, baseRequstSign);
         Request request = HttpRequest.put(REPORT_URL, params);
-        RequestFactory.getRequestConnect().connect(request, new IRequestHandler() {
+        RequestFactory.initConnect(RequestFactory.HttpPlugin.OK_HTTP).connect(request, new IRequestHandler() {
             @Override
             public void requestFinish(Request request, IResponse response) {
                 if (!response.isSuccess()) {
