@@ -8,5 +8,4 @@ public interface IResponse {
 
     Object getData();
     boolean isSuccess();
-
 }

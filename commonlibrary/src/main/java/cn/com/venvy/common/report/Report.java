@@ -123,18 +123,6 @@ public class Report {
         });
     }
 
-    protected static void cacheReportInfo(ReportInfo info) {
-        try {
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("leave", info.leave);
-            jsonObject.put("message", info.message);
-            cacheReportInfo(jsonObject);
-        } catch (JSONException e) {
-            VenvyLog.e("", e);
-            //忽略此处的异常，如果此处添加report，可能会引起死循环
-        }
-    }
-
     static void cacheReportInfo(List<ReportInfo> infoList) {
         if (infoList == null || infoList.size() == 0) {
             return;
@@ -149,21 +137,16 @@ public class Report {
         }
         List<ReportInfo> list = new ArrayList<>();
         JSONArray jsonArray = JSONArray.parseArray(cacheString);
-        if (jsonArray != null) {
-            for (int i = 0; i < jsonArray.size(); i++) {
-                JSONObject jsonObject = jsonArray.getJSONObject(i);
-                ReportInfo reportInfo = new ReportInfo();
-                reportInfo.message = jsonObject.getString("message");
-                reportInfo.leave = ReportLevel.getLevel(jsonObject.getIntValue("leave"));
-                list.add(reportInfo);
-            }
+        for (int i = 0; jsonArray != null && i < jsonArray.size(); i++) {
+            JSONObject jsonObject = jsonArray.getJSONObject(i);
+            ReportInfo reportInfo = new ReportInfo();
+            reportInfo.message = jsonObject.getString("message");
+            reportInfo.leave = ReportLevel.getLevel(jsonObject.getIntValue("leave"));
+            list.add(reportInfo);
         }
         return list;
     }
 
-    private static void clearCache() {
-
-    }
 
     private static String reportInfoListToString(List<ReportInfo> infoList) {
         if (infoList == null || infoList.size() == 0) {
@@ -185,25 +168,6 @@ public class Report {
         return jsonArray.toJSONString();
     }
 
-    private static void cacheReportInfo(JSONObject jsonObject) {
-        if (jsonObject == null) {
-            return;
-        }
-        String cacheString = getByFile();
-        try {
-            JSONArray jsonArray;
-            if (!TextUtils.isEmpty(cacheString)) {
-                jsonArray = JSONArray.parseArray(cacheString);
-            } else {
-                jsonArray = new JSONArray();
-            }
-            jsonArray.add(jsonObject);
-            saveToFile(jsonArray.toString());
-        } catch (JSONException e) {
-            VenvyLog.e("", e);
-        }
-    }
-
     private static void saveToFile(String s) {
         if (TextUtils.isEmpty(s)) {
             return;
@@ -213,6 +177,10 @@ public class Report {
 
     private static String getByFile() {
         return null;
+    }
+
+    private static void clearCache() {
+
     }
 
     /**

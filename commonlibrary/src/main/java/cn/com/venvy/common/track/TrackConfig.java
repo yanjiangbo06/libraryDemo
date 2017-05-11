@@ -16,33 +16,35 @@ public class TrackConfig {
     public static final String TRACK_VIDEO_ID = "VenvyVideoId";
     public static final String TRACK_CHANNEL_ID = "VenvyChannelId";
     public static final String TRACK_BRAND_ID = "VenvyBrandId";
+    public static final String TRACK_PREFERENCE_NAME = "tarck-cache";
 
     public TrackConfig(Context context) {
         mContext = context;
     }
 
-    public String getVideoId() {
-        return VenvyPreferenceHelper.getString(mContext, TRACK_VIDEO_ID, "");
-    }
 
     public void setVideoId(@NonNull String videoId) {
-        VenvyPreferenceHelper.putString(mContext, TRACK_VIDEO_ID, videoId);
+        VenvyPreferenceHelper.putString(mContext, TRACK_PREFERENCE_NAME, TRACK_VIDEO_ID, videoId);
     }
 
     public String getChannelId() {
-        return VenvyPreferenceHelper.getString(mContext, TRACK_CHANNEL_ID, "");
+        return VenvyPreferenceHelper.getString(mContext, TRACK_PREFERENCE_NAME, TRACK_CHANNEL_ID, "");
+    }
+
+    public String getVideoId() {
+        return VenvyPreferenceHelper.getString(mContext, TRACK_PREFERENCE_NAME, TRACK_VIDEO_ID, "");
     }
 
     public void setChannelId(@NonNull String channelId) {
-        VenvyPreferenceHelper.putString(mContext, TRACK_CHANNEL_ID, channelId);
+        VenvyPreferenceHelper.putString(mContext, TRACK_PREFERENCE_NAME, TRACK_CHANNEL_ID, channelId);
     }
 
     public String getBrandId() {
-        return VenvyPreferenceHelper.getString(mContext, TRACK_BRAND_ID, "");
+        return VenvyPreferenceHelper.getString(mContext, TRACK_PREFERENCE_NAME, TRACK_BRAND_ID, "");
     }
 
     public void setBrandId(@NonNull String brandId) {
-        VenvyPreferenceHelper.putString(mContext, TRACK_BRAND_ID, brandId);
+        VenvyPreferenceHelper.putString(mContext, TRACK_PREFERENCE_NAME, TRACK_BRAND_ID, brandId);
     }
 
     public boolean isBrandIdEffective() {

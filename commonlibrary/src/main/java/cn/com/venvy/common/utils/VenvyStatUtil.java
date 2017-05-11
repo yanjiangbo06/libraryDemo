@@ -2,6 +2,13 @@ package cn.com.venvy.common.utils;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+
+import cn.com.venvy.common.http.HttpRequest;
+import cn.com.venvy.common.http.RequestFactory;
+import cn.com.venvy.common.http.base.IRequestConnect;
+import cn.com.venvy.common.http.base.IRequestHandler;
+import cn.com.venvy.common.http.base.IResponse;
+import cn.com.venvy.common.http.base.Request;
 import cn.com.venvy.okhttp3.Call;
 import cn.com.venvy.okhttp3.util.OkHttpUtils;
 import cn.com.venvy.okhttp3.util.callback.StringCallback;
@@ -209,7 +216,7 @@ public class VenvyStatUtil {
 		builder.append(mLanguage);//language
 		builder.append(APP_KEY);//appkey
 		builder.append(mProjectId);
-		httpRequest(builder.toString(),304);
+		httpRequest(builder.toString());
 	}
 
 	// 离开直播间统计cat=19//
@@ -245,7 +252,7 @@ public class VenvyStatUtil {
 		builder.append(mResolution);
 		builder.append(mLanguage);//language
 		builder.append(BODY_LIVE_STAT_LANGUAGE );
-		httpRequest(builder.toString(),319);
+		httpRequest(builder.toString());
 	}
 
 	/**
@@ -302,7 +309,7 @@ public class VenvyStatUtil {
 		builder.append(mResolution);
 		builder.append(BODY_LIVE_STAT_LANGUAGE);
 		builder.append(mLanguage);
-		httpRequest(builder.toString(),312);
+		httpRequest(builder.toString());
 	}
 
 	// 开启请求
@@ -351,7 +358,7 @@ public class VenvyStatUtil {
 		builder.append(mResolution);
 		builder.append(BODY_LIVE_STAT_LANGUAGE);
 		builder.append(mLanguage);
-		httpRequest(builder.toString(),309);
+		httpRequest(builder.toString());
 	}
 
 	// 热点推送cat=8
@@ -387,7 +394,7 @@ public class VenvyStatUtil {
 		builder.append(mResolution);
 		builder.append(BODY_LIVE_STAT_LANGUAGE);
 		builder.append(mLanguage);
-		httpRequest(builder.toString(),308);
+		httpRequest(builder.toString());
 	}
 
 	// 热点暂停cat=27
@@ -423,7 +430,7 @@ public class VenvyStatUtil {
 		builder.append(mResolution);
 		builder.append(BODY_LIVE_STAT_LANGUAGE);
 		builder.append(mLanguage);
-		httpRequest(builder.toString(),327);
+		httpRequest(builder.toString());
 	}
 
 	/**
@@ -476,7 +483,7 @@ public class VenvyStatUtil {
 		builder.append(mResolution);
 		builder.append(BODY_LIVE_STAT_LANGUAGE);
 		builder.append(mLanguage);
-		httpRequest(builder.toString(),334);
+		httpRequest(builder.toString());
 	}
 
 	//广告曝光
@@ -512,7 +519,7 @@ public class VenvyStatUtil {
 		builder.append(mResolution);
 		builder.append(BODY_LIVE_STAT_LANGUAGE);
 		builder.append(mLanguage);
-		httpRequest(builder.toString(),334);
+		httpRequest(builder.toString());
 	}
 
 	//广告点击
@@ -548,7 +555,7 @@ public class VenvyStatUtil {
 		builder.append(mResolution);
 		builder.append(BODY_LIVE_STAT_LANGUAGE);
 		builder.append(mLanguage);
-		httpRequest(builder.toString(),334);
+		httpRequest(builder.toString());
 	}
 
 	public void cat20(
@@ -597,7 +604,7 @@ public class VenvyStatUtil {
 		builder.append(mResolution);
 		builder.append(BODY_LIVE_STAT_LANGUAGE);
 		builder.append(mLanguage);
-		httpRequest(builder.toString(),320);
+		httpRequest(builder.toString());
 	}
 
 	/**
@@ -646,7 +653,7 @@ public class VenvyStatUtil {
 		builder.append(mResolution);
 		builder.append( BODY_LIVE_STAT_LANGUAGE);
 		builder.append( mLanguage);
-		httpRequest(builder.toString(),311);
+		httpRequest(builder.toString());
 	}
 
 
@@ -688,7 +695,7 @@ public class VenvyStatUtil {
 		builder.append(mResolution);
 		builder.append( BODY_LIVE_STAT_LANGUAGE);
 		builder.append( mLanguage);
-		httpRequest(builder.toString(),313);
+		httpRequest(builder.toString());
 	}
 
 	// 主播点击灵动球cat=31
@@ -731,7 +738,7 @@ public class VenvyStatUtil {
 		builder.append( mResolution);
 		builder.append( BODY_LIVE_STAT_LANGUAGE );
 		builder.append( mLanguage);
-		httpRequest(builder.toString(),331);
+		httpRequest(builder.toString());
 	}
 
 	// 主播拖动灵动球cat=32
@@ -770,7 +777,7 @@ public class VenvyStatUtil {
 		builder.append(mResolution);
 		builder.append(BODY_LIVE_STAT_LANGUAGE);
 		builder.append(mLanguage);
-		httpRequest(builder.toString(),332);
+		httpRequest(builder.toString());
 	}
 
 	// 连接MQTT cat=33//
@@ -806,21 +813,24 @@ public class VenvyStatUtil {
 		builder.append(  BODY_LIVE_STAT_LANGUAGE );
 		builder.append( mLanguage );
 		String url = builder.toString();
-		httpRequest(url,332);
+		httpRequest(url);
 	}
 
-	private void httpRequest(String url,int id){
-		OkHttpUtils.get().url(url)
-				.id(id).build().execute(new StringCallback() {
+	protected static IRequestConnect requestConnect = RequestFactory.initConnect(RequestFactory.HttpPlugin.OK_HTTP);
+	private void httpRequest(String url){
+		Request request = HttpRequest.get(url);
+		requestConnect.connect(request, new IRequestHandler.RequestHandlerAdapter() {
 			@Override
-			public void onResponse(String response, int id) {
-				VenvyLog.e("测试接口正常");
-			}
-			@Override
-			public void onError(Call call, Exception e, int id) {
-				VenvyLog.e("测试接口失败");
+			public void requestFinish(Request request, IResponse response) {
+				if(response.isSuccess()) {
+					VenvyLog.v("测试接口正常");
+				}else {
+					VenvyLog.e("测试接口失败");
+				}
+
 			}
 		});
+
 	}
 
 }

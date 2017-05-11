@@ -37,7 +37,7 @@ public class VenvyUIUtil {
      * is requesting.
      * @see View#setOnSystemUiVisibilityChangeListener(android.view.View.OnSystemUiVisibilityChangeListener)
      */
-    public static interface OnSystemUiVisibilityChangeListenerCompact {
+    public  interface OnSystemUiVisibilityChangeListenerCompact {
         /**
          * Called when the status bar changes visibility because of a call to
          */
@@ -65,7 +65,7 @@ public class VenvyUIUtil {
         }
     }
 
-    public static interface Method<T> {
+    public  interface Method<T> {
         T call();
     }
 
@@ -339,12 +339,13 @@ public class VenvyUIUtil {
      */
     public static View getChildByType(ViewGroup parent, Class<? extends View> viewClass) {
 
-        if (parent != null) {
-            for (int i = 0; i < parent.getChildCount(); i++) {
-                View child = parent.getChildAt(i);
-                if (child.getClass() == viewClass) {
-                    return child;
-                }
+        if(null == parent){
+            return null;
+        }
+        for (int i = 0,count = parent.getChildCount(); i < count; i++) {
+            View child = parent.getChildAt(i);
+            if (child.getClass() == viewClass) {
+                return child;
             }
         }
 

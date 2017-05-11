@@ -10,6 +10,7 @@ import java.util.HashMap;
 
 import cn.com.venvy.common.http.HttpRequest;
 import cn.com.venvy.common.http.RequestFactory;
+import cn.com.venvy.common.http.base.IRequestConnect;
 import cn.com.venvy.common.http.base.IRequestHandler;
 import cn.com.venvy.common.http.base.IResponse;
 import cn.com.venvy.common.http.base.Request;
@@ -36,8 +37,6 @@ public class VideoOsTrackHelper {
     private static final String TRACK_CAT = "cat";
     private static final String TRACK_TARGET_ID = "tid";
 
-    private static final String TRACK_HOST_URL = "http://va.videojj.com/";
-    private static final String TRACK_URL = TRACK_HOST_URL + "track/v4/va.gif";
     private static final String TRACK_CACHE_KEY = "VenvyVOSTRACK";
 
     private static int mCacheSize = 3;
@@ -47,14 +46,16 @@ public class VideoOsTrackHelper {
         mCacheSize = cacheSize;
     }
 
+
+
     /**
      * 小白点get请求
      *
      * @param trackParams 请求所需参数
      */
     public static void getAction(TrackParams trackParams) {
-        Request request = HttpRequest.get(TRACK_URL, buildGetParams(trackParams));
-        new RequestFactory().initConnect(RequestFactory.HttpPlugin.OK_HTTP).connect(request, null);
+        Request request = HttpRequest.get(TrackHelper.TRACK_URL, buildGetParams(trackParams));
+        TrackHelper.requestConnect.connect(request, null);
     }
 
     /**
@@ -72,14 +73,13 @@ public class VideoOsTrackHelper {
     }
 
     private static void doPost(final Context context) {
-
-        String cacheJsonStr = VenvyPreferenceHelper.getString(context, TRACK_CACHE_KEY, EMPTY_CACHE);
+        String cacheJsonStr = VenvyPreferenceHelper.getString(context, TrackConfig.TRACK_PREFERENCE_NAME, TRACK_CACHE_KEY, EMPTY_CACHE);
         try {
             JSONObject json = new JSONObject(cacheJsonStr);
             JSONArray cacheJsonArray = json.optJSONArray("params");
             int cacheSize = cacheJsonArray.length();
             if (cacheSize >= mCacheSize) {
-                doPost(context, cacheJsonArray, new IRequestHandler.RequestHandlerAdapter() {
+                doPost(cacheJsonArray, new IRequestHandler.RequestHandlerAdapter() {
                     @Override
                     public void requestFinish(Request request, IResponse response) {
                         if (response.isSuccess()) {
@@ -94,15 +94,15 @@ public class VideoOsTrackHelper {
     }
 
     private static void initCache(Context context) {
-        if (!VenvyPreferenceHelper.contains(context, TRACK_CACHE_KEY)) {
-            VenvyPreferenceHelper.putString(context, TRACK_CACHE_KEY, EMPTY_CACHE);
+        if (!VenvyPreferenceHelper.contains(context, TrackConfig.TRACK_PREFERENCE_NAME, TRACK_CACHE_KEY)) {
+            VenvyPreferenceHelper.putString(context, TrackConfig.TRACK_PREFERENCE_NAME, TRACK_CACHE_KEY, EMPTY_CACHE);
         }
     }
 
     private static void cache(Context context, TrackParams trackParams) {
         //如果还没有建立缓存,则初始化之
         initCache(context);
-        String cacheJsonStr = VenvyPreferenceHelper.getString(context, TRACK_CACHE_KEY, EMPTY_CACHE);
+        String cacheJsonStr = VenvyPreferenceHelper.getString(context, TrackConfig.TRACK_PREFERENCE_NAME, TRACK_CACHE_KEY, EMPTY_CACHE);
         try {
             JSONObject json = new JSONObject(cacheJsonStr);
             JSONArray cacheJsonArray = json.optJSONArray("params");
@@ -110,14 +110,14 @@ public class VideoOsTrackHelper {
             JSONObject paramJsonObj = new JSONObject(trackParams.toString());
             cacheJsonArray.put(cacheSize, paramJsonObj);
             VenvyLog.e("cacheParas ==" + json.toString());
-            VenvyPreferenceHelper.putString(context, TRACK_CACHE_KEY, json.toString());
+            VenvyPreferenceHelper.putString(context, TrackConfig.TRACK_PREFERENCE_NAME, TRACK_CACHE_KEY, json.toString());
         } catch (JSONException e) {
         }
     }
 
-    private static void doPost(Context context, JSONArray cacheJsonArray, IRequestHandler requestHandler) {
-        Request request = HttpRequest.post(TRACK_URL, buildPostParams(cacheJsonArray));
-        new RequestFactory().initConnect(RequestFactory.HttpPlugin.OK_HTTP).connect(request, requestHandler);
+    private static void doPost(JSONArray cacheJsonArray, IRequestHandler requestHandler) {
+        Request request = HttpRequest.post(TrackHelper.TRACK_URL, buildPostParams(cacheJsonArray));
+        TrackHelper.requestConnect.connect(request, requestHandler);
     }
 
     private static HashMap<String, String> buildPostParams(JSONArray cacheJsonArray) {

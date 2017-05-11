@@ -1,11 +1,17 @@
 package cn.com.venvy.common.utils;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.math.RoundingMode;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -16,6 +22,7 @@ import java.util.regex.Pattern;
  */
 public class VenvyStringUtil {
 
+    public static final String EMPTY = "";
 
     /**
      * 校验是否是手机号
@@ -137,5 +144,6 @@ public class VenvyStringUtil {
         }
         return result;
     }
+
 
 }

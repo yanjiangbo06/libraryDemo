@@ -11,7 +11,7 @@ import java.util.Map;
 
 public class VenvyJSONUtl {
 
-    public static JSONObject MapToJSON(Map<String, String> map) {
+    public static JSONObject mpToJSON(Map<String, String> map) {
         if (map == null || map.size() <= 0) {
             return null;
         }
