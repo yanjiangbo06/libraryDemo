@@ -16,6 +16,7 @@ import java.util.regex.Pattern;
  */
 public class VenvyStringUtil {
 
+    public static final String EMPTY = "";
 
     /**
      * 校验是否是手机号

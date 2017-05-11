@@ -43,6 +43,14 @@ public class VenvyDeviceUtil {
 	    return Build.VERSION.RELEASE;
     }
 
+    /***
+     * 获取系统唯一标识码
+     * @return
+     */
+    public static String getClient() {
+        return android.os.Build.SERIAL;
+    }
+
     /**
      * 获取手机IMEI号，需要<uses-permission
      * android:name="android.permission.READ_PHONE_STATE" />
