@@ -22,7 +22,7 @@ public class VenvyAesUtil {
     // /** 算法/模式/填充 **/
     private static final String CipherMode = "AES/CBC/PKCS7Padding";
 
-    private static final int LENGTH = 32;
+    private static final int IV_LENGTH = 16;
 
 
     public static String encrypt(String key, String iv, String content) throws Exception {
@@ -134,13 +134,13 @@ public class VenvyAesUtil {
         if (password == null) {
             password = "";
         }
-        StringBuffer sb = new StringBuffer(LENGTH);
+        StringBuffer sb = new StringBuffer(IV_LENGTH);
         sb.append(password);
-        while (sb.length() < LENGTH) {
+        while (sb.length() < IV_LENGTH) {
             sb.append("0");
         }
-        if (sb.length() > LENGTH) {
-            sb.setLength(LENGTH);
+        if (sb.length() > IV_LENGTH) {
+            sb.setLength(IV_LENGTH);
         }
 
         try {
