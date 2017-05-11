@@ -111,7 +111,7 @@ public class Report {
         String baseRequestSign = VenvyBase64.encode(signParams.getBytes());
         params.put(REPORT_SERVER_KEY, baseRequestSign);
         Request request = HttpRequest.put(REPORT_URL, params);
-        RequestFactory.initConnect(RequestFactory.HttpPlugin.OK_HTTP).connect(request, new IRequestHandler() {
+        RequestFactory.initConnect(RequestFactory.HttpPlugin.OK_HTTP).connect(request, new IRequestHandler.RequestHandlerAdapter() {
             @Override
             public void requestFinish(Request request, IResponse response) {
                 if (!response.isSuccess()) {
@@ -119,21 +119,6 @@ public class Report {
                 } else {
                     clearCache();
                 }
-            }
-
-            @Override
-            public void requestError(Request request, Exception e) {
-
-            }
-
-            @Override
-            public void startRequest(Request request) {
-                cacheReportInfo(list);
-            }
-
-            @Override
-            public void requestProgress(Request request, int progress) {
-
             }
         });
     }

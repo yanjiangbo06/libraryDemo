@@ -5,7 +5,7 @@ package cn.com.venvy.common.track;
  * Created by Arthur on 2017/5/9.
  */
 
-public class TrackParamsException extends IllegalArgumentException{
+public class TrackParamsException extends IllegalArgumentException {
     public TrackParamsException() {
     }
 

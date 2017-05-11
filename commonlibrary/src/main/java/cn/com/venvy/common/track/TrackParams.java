@@ -94,19 +94,19 @@ public class TrackParams { //曝光
     }
 
     public String getTargetIds() {
-       StringBuilder builder = new StringBuilder("[");
-       for(int i = 0,size = mTargetIds.size(); i < size ;i++){
-         builder.append(mTargetIds.get(i));
-         if(i != size-1){
-             builder.append(",");
-         }
-       }
+        StringBuilder builder = new StringBuilder("[");
+        for (int i = 0, size = mTargetIds.size(); i < size; i++) {
+            builder.append(mTargetIds.get(i));
+            if (i != size - 1) {
+                builder.append(",");
+            }
+        }
         builder.append("]");
         return builder.toString();
     }
 
     public void addTargetId(@Nullable String targetId) {
-       mTargetIds.add(targetId);
+        mTargetIds.add(targetId);
     }
 
     /**
