@@ -70,6 +70,7 @@ public class VideoOsTrackHelper {
     }
 
     private static void doPost(final Context context){
+
         String cacheJsonStr = VenvyPreferenceHelper.getString(context,TRACK_CACHE_KEY,EMPTY_CACHE);
         try{
             JSONObject json = new JSONObject(cacheJsonStr);
@@ -89,7 +90,14 @@ public class VideoOsTrackHelper {
         }catch(JSONException e){
         }
     }
+    private static void initCache(Context context){
+        if(!VenvyPreferenceHelper.contains(context,TRACK_CACHE_KEY)){
+            VenvyPreferenceHelper.putString(context,TRACK_CACHE_KEY,EMPTY_CACHE);
+        }
+    }
     private static void cache(Context context,TrackParams trackParams){
+        //如果还没有建立缓存,则初始化之
+        initCache(context);
         String cacheJsonStr = VenvyPreferenceHelper.getString(context,TRACK_CACHE_KEY,EMPTY_CACHE);
         try{
             JSONObject json = new JSONObject(cacheJsonStr);
