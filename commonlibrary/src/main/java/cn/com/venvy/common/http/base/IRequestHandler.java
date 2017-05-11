@@ -18,4 +18,22 @@ public interface IRequestHandler {
      * @param progress
      */
     void requestProgress(Request request, int progress);
+    abstract  class RequestHandlerAdapter implements  IRequestHandler{
+        @Override
+        public void requestFinish(Request request, IResponse response) {
+
+        }
+        @Override
+        public void requestError(Request request, Exception e) {
+
+        }
+        @Override
+        public void startRequest(Request request) {
+
+        }
+        @Override
+        public void requestProgress(Request request, int progress) {
+
+        }
+    }
 }

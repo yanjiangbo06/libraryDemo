@@ -94,13 +94,13 @@ public class VenvyDeviceUtil {
      * @return
      */
     public static String getClientId(Context mContext) {
-        String clientId = VenvyPreferenceUtils.getString(mContext, "VideoJj-Live-clientID", null);
+        String clientId = VenvyPreferenceHelper.getString(mContext, "VideoJj-Live-clientID", null);
         if (!TextUtils.isEmpty(clientId))
             return clientId;
         else {
             clientId = String.valueOf(System.currentTimeMillis())
                     + VenvyRandomUtils.getRandomNumbersAndLetters(8);
-            VenvyPreferenceUtils.putString(mContext, "VideoJj-Live-clientID", clientId);
+            VenvyPreferenceHelper.putString(mContext, "VideoJj-Live-clientID", clientId);
             return clientId;
         }
     }
