@@ -31,9 +31,9 @@ import cn.com.venvy.common.utils.VenvyUIUtil;
 
 public class Report {
 
-    private static final String REPORT_AES_KEY = "8lgK5fr5yatOfHio";
-    private static final String REPORT_AES_IV = "lx7eZhVoBEnKXELF";
-    private static final String REPORT_URL = "http://log.videojj.com/";
+    private static final String REPORT_AES_KEY = "8lgK5fr5yatOfHio8lgK5fr5yatOfHio";
+    private static final String REPORT_AES_IV = "lx7eZhVoBEnKXELFlx7eZhVoBEnKXELF";
+    private static final String REPORT_URL = "http://test.log.videojj.com/";
     private static final String REPORT_SERVER_KEY = "info";
     private static final String KEY_ASYNC_TASK = "Report_report";
 
@@ -113,20 +113,25 @@ public class Report {
             return;
         }
         HashMap<String, String> params = new HashMap<>();
-        String signParams = VenvyAesUtil.encrypt(reportInfoListToString(list), REPORT_AES_KEY, REPORT_AES_IV);
-        String baseRequestSign = VenvyBase64.encode(signParams.getBytes());
-        params.put(REPORT_SERVER_KEY, baseRequestSign);
-        Request request = HttpRequest.put(REPORT_URL, params);
-        RequestFactory.initConnect(RequestFactory.HttpPlugin.OK_HTTP).connect(request, new IRequestHandler.RequestHandlerAdapter() {
-            @Override
-            public void requestFinish(Request request, IResponse response) {
-                if (!response.isSuccess()) {
-                    requestError(request, new Exception());
-                } else {
-                    clearCache();
+        String signParams = null;
+        try {
+            signParams = VenvyAesUtil.encrypt(REPORT_AES_KEY, REPORT_AES_IV, reportInfoListToString(list));
+            String baseRequestSign = VenvyBase64.encode(signParams.getBytes());
+            params.put(REPORT_SERVER_KEY, baseRequestSign);
+            Request request = HttpRequest.put(REPORT_URL, params);
+            RequestFactory.initConnect(RequestFactory.HttpPlugin.OK_HTTP).connect(request, new IRequestHandler.RequestHandlerAdapter() {
+                @Override
+                public void requestFinish(Request request, IResponse response) {
+                    if (!response.isSuccess()) {
+                        requestError(request, new Exception());
+                    } else {
+                        clearCache();
+                    }
                 }
-            }
-        });
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     static void cacheReportInfo(List<ReportInfo> infoList) {
