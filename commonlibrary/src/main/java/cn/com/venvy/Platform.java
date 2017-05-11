@@ -39,9 +39,6 @@ public class Platform {
         if (application != null) {
             mApplicationContext = application.getApplication();
         }
-
-        PlatformInfo info = new PlatformInfo.Builder().setBuId("OTT").setSdkVersion("").builder();
-        Platform.instance().init(info);
     }
 
     public Context getContext() {

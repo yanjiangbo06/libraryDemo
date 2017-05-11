@@ -1,15 +1,18 @@
 package cn.com.venvy.common.report;
 
+import android.content.Context;
 import android.text.TextUtils;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
+import com.facebook.common.file.FileUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import cn.com.venvy.Platform;
 import cn.com.venvy.common.http.HttpRequest;
 import cn.com.venvy.common.http.RequestFactory;
 import cn.com.venvy.common.http.base.IRequestHandler;
@@ -18,6 +21,7 @@ import cn.com.venvy.common.http.base.Request;
 import cn.com.venvy.common.utils.VenvyAesUtil;
 import cn.com.venvy.common.utils.VenvyAsyncTaskUtil;
 import cn.com.venvy.common.utils.VenvyBase64;
+import cn.com.venvy.common.utils.VenvyFileUtil;
 import cn.com.venvy.common.utils.VenvyLog;
 import cn.com.venvy.common.utils.VenvyUIUtil;
 
@@ -32,6 +36,8 @@ public class Report {
     private static final String REPORT_URL = "";
     private static final String REPORT_SERVER_KEY = "info";
     private static final String KEY_ASYNC_TASK = "Report_report";
+
+    private static final String REPORT_CACHE_FILE_NAME = "Veney-report-cache";
 
     //最大缓存条数
     static final int MAX_CACHE_NUM = 5;
@@ -172,15 +178,19 @@ public class Report {
         if (TextUtils.isEmpty(s)) {
             return;
         }
+        Context context = Platform.instance().getContext();
+        VenvyFileUtil.saveFile(context, REPORT_CACHE_FILE_NAME, s);
 
     }
 
     private static String getByFile() {
-        return null;
+        Context context = Platform.instance().getContext();
+        return VenvyFileUtil.readFile(context, REPORT_CACHE_FILE_NAME);
     }
 
     private static void clearCache() {
-
+        Context context = Platform.instance().getContext();
+        VenvyFileUtil.deleteFile(context, REPORT_CACHE_FILE_NAME);
     }
 
     /**

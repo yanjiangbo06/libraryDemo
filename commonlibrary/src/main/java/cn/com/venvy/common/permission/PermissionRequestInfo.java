@@ -1,8 +1,5 @@
 package cn.com.venvy.common.permission;
 
-/**
- * Created by yanjiangbo on 2017/4/28.
- */
 
 import android.content.pm.PackageManager;
 
