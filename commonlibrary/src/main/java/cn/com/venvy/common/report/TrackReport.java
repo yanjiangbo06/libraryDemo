@@ -14,11 +14,18 @@ class TrackReport extends Report {
         if (list == null) {
             list = new ArrayList<>();
         }
-        list.add(reportInfo);
+        if (reportInfo != null) {
+            list.add(reportInfo);
+        }
         if (list.size() >= MAX_CACHE_NUM) {
             startReport(list);
         } else {
             cacheReportInfo(list);
         }
+    }
+
+    public static void reportCache() {
+        List<ReportInfo> list = getReportInfoList();
+        startReport(list);
     }
 }

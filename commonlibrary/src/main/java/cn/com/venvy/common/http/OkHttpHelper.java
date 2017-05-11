@@ -10,7 +10,6 @@ import cn.com.venvy.common.http.base.BaseRequestConnect;
 import cn.com.venvy.common.http.base.IRequestHandler;
 import cn.com.venvy.common.http.base.IResponse;
 import cn.com.venvy.common.http.base.Request;
-import cn.com.venvy.common.http.base.RequestType;
 import cn.com.venvy.common.utils.VenvyLog;
 import cn.com.venvy.okhttp3.Call;
 import cn.com.venvy.okhttp3.Callback;

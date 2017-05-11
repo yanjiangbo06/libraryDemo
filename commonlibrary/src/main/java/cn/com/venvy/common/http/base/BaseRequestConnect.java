@@ -114,13 +114,13 @@ public abstract class BaseRequestConnect implements IRequestConnect {
 
     private static final String VERSION = "version";
     private static final String SDK_VERSION = "sdk-version";
-    private static final String USER_AGENT = "user-agent";
+    private static final String USER_AGENT = "User-Agent";
     private static final String OS_VERSION = "os-version";
     private static final String UDID = "udid";
     private static final String TOKEN = "token";
     private static final String IP = "ip";
     private static final String NETWORK = "network";
-    private static final String PLATFORM_ID = "platform-id";
+    private static final String PLATFORM_ID = "3rd-platform-id";
     private static final String CYTRON_VERSION = "cytory-version";
     private static final String LAUGUAGE = "language";
     private static final String BU = "bu-id";
