@@ -31,9 +31,9 @@ import cn.com.venvy.common.utils.VenvyUIUtil;
 
 public class Report {
 
-    private static final String REPORT_AES_KEY = "";
+    private static final String REPORT_AES_KEY = "videojj";
     private static final String REPORT_AES_IV = "";
-    private static final String REPORT_URL = "";
+    private static final String REPORT_URL = "http://log.videojj.com/";
     private static final String REPORT_SERVER_KEY = "info";
     private static final String KEY_ASYNC_TASK = "Report_report";
 
@@ -88,7 +88,7 @@ public class Report {
             @Override
             public Void doAsyncTask(Void... strings) throws Exception {
                 ReportInfo reportInfo = new ReportInfo();
-                reportInfo.leave = level;
+                reportInfo.level = level;
                 reportInfo.message = reportString;
                 if (level == ReportLevel.e) {
                     CrashReport.report(reportInfo);
@@ -147,7 +147,7 @@ public class Report {
             JSONObject jsonObject = jsonArray.getJSONObject(i);
             ReportInfo reportInfo = new ReportInfo();
             reportInfo.message = jsonObject.getString("message");
-            reportInfo.leave = ReportLevel.getLevel(jsonObject.getIntValue("leave"));
+            reportInfo.level = ReportLevel.getLevel(jsonObject.getIntValue("level"));
             list.add(reportInfo);
         }
         return list;
@@ -163,7 +163,7 @@ public class Report {
             ReportInfo reportInfo = infoList.get(i);
             try {
                 JSONObject jsonObject = new JSONObject();
-                jsonObject.put("leave", reportInfo.leave.getValue());
+                jsonObject.put("leave", reportInfo.level.getValue());
                 jsonObject.put("message", reportInfo.message);
                 jsonArray.add(jsonObject);
             } catch (JSONException e) {

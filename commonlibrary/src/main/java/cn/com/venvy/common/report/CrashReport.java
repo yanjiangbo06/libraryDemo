@@ -28,7 +28,7 @@ class CrashReport extends Report {
             VenvyLog.e("nullPointException for Report Exception value");
         }
         ReportInfo info = new ReportInfo();
-        info.leave = ReportLevel.e;
+        info.level = ReportLevel.e;
         info.message = e.fillInStackTrace().getMessage();
         report(info);
     }
