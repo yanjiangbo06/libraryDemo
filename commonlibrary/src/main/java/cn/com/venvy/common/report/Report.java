@@ -31,8 +31,8 @@ import cn.com.venvy.common.utils.VenvyUIUtil;
 
 public class Report {
 
-    private static final String REPORT_AES_KEY = "videojj";
-    private static final String REPORT_AES_IV = "";
+    private static final String REPORT_AES_KEY = "8lgK5fr5yatOfHio";
+    private static final String REPORT_AES_IV = "lx7eZhVoBEnKXELF";
     private static final String REPORT_URL = "http://log.videojj.com/";
     private static final String REPORT_SERVER_KEY = "info";
     private static final String KEY_ASYNC_TASK = "Report_report";
