@@ -18,18 +18,18 @@ import cn.com.venvy.common.utils.VenvyPreferenceHelper;
 public class TrackHelper {
 
     private static final String TRACK_FILE_NAME = "VenvyVideoOSTRACK";
-    private static final String  EMPTY_CACHE = "{params:[]}";
+    private static final String EMPTY_CACHE = "{params:[]}";
     private static final String TRACK_HOST_URL = "http://va.videojj.com/";
-    private static final String TRACK_URL = TRACK_HOST_URL +"track/v4/va.gif";
+    private static final String TRACK_URL = TRACK_HOST_URL + "track/v4/va.gif";
 
-    public static void getTrackAction(Context context,HashMap<String ,String> params){
-        Request request = HttpRequest.get(TRACK_URL,params);
-        new RequestFactory().initConnect(RequestFactory.HttpPlugin.OK_HTTP).connect(request,null);
+    public static void getTrackAction(Context context, HashMap<String, String> params) {
+        Request request = HttpRequest.get(TRACK_URL, params);
+        new RequestFactory().initConnect(RequestFactory.HttpPlugin.OK_HTTP).connect(request, null);
     }
 
-    public static void postTrackAction(Context context,HashMap<String ,String> params) {
+    public static void postTrackAction(Context context, HashMap<String, String> params) {
         //获取缓存的数据
-        String cacheJsonStr = VenvyPreferenceHelper.getString(context,TRACK_FILE_NAME,EMPTY_CACHE);
+        String cacheJsonStr = VenvyPreferenceHelper.getString(context, TRACK_FILE_NAME, EMPTY_CACHE,"");
     }
 
 }
