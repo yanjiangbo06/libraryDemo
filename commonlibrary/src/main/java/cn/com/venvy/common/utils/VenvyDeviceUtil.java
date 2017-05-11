@@ -27,20 +27,22 @@ public class VenvyDeviceUtil {
     private static final String TAG = "VenvyDeviceUtil";
     private static final String PREFS_FILE = "device_id.xml";
     private static final String PREFS_DEVICE_ID = "device_id";
+    private static final String DEVICE_PREFERENCE_NAME = "venvy-device";
     protected static final String PREFS_ADINFO_ID = "adinfo_id";
 
-	public static String getLanguage(Context context){
-		return context.getResources()
-				.getConfiguration().locale.getCountry();
-	}
-	public static String getUserAgent(){
-		return android.os.Build.MODEL + "/"
-				+ android.os.Build.VERSION.SDK + "/"
-				+ android.os.Build.VERSION.RELEASE;
-	}
+    public static String getLanguage(Context context) {
+        return context.getResources()
+                .getConfiguration().locale.getCountry();
+    }
 
-	public static String getOsVersion() {
-	    return Build.VERSION.RELEASE;
+    public static String getUserAgent() {
+        return android.os.Build.MODEL + "/"
+                + android.os.Build.VERSION.SDK + "/"
+                + android.os.Build.VERSION.RELEASE;
+    }
+
+    public static String getOsVersion() {
+        return Build.VERSION.RELEASE;
     }
 
     /***
@@ -102,13 +104,13 @@ public class VenvyDeviceUtil {
      * @return
      */
     public static String getClientId(Context mContext) {
-        String clientId = VenvyPreferenceHelper.getString(mContext, "VideoJj-Live-clientID", null);
+        String clientId = VenvyPreferenceHelper.getString(mContext, DEVICE_PREFERENCE_NAME, "VideoJj-Live-clientID", null);
         if (!TextUtils.isEmpty(clientId))
             return clientId;
         else {
             clientId = String.valueOf(System.currentTimeMillis())
                     + VenvyRandomUtils.getRandomNumbersAndLetters(8);
-            VenvyPreferenceHelper.putString(mContext, "VideoJj-Live-clientID", clientId);
+            VenvyPreferenceHelper.putString(mContext, DEVICE_PREFERENCE_NAME, "VideoJj-Live-clientID", clientId);
             return clientId;
         }
     }
