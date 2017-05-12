@@ -121,8 +121,8 @@ public abstract class BaseRequestConnect implements IRequestConnect {
     private static final String IP = "ip";
     private static final String NETWORK = "network";
     private static final String PLATFORM_ID = "3rd-platform-id";
-    private static final String CYTRON_VERSION = "cytory-version";
-    private static final String LAUGUAGE = "language";
+    private static final String CYTRON_VERSION = "api-version";
+    private static final String LAUGUAGE = "lang";
     private static final String BU = "bu-id";
 
     private HashMap<String, String> buildDefaultUrlHeaders() {

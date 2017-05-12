@@ -46,7 +46,12 @@ public class VenvyFileUtil {
                     Manifest.permission.READ_EXTERNAL_STORAGE
             }, new String[]{
                     "外部文件权限"
-            }, null);
+            }, new PermissionCheckHelper.PermissionCallbackListener() {
+                @Override
+                public void onPermissionCheckCallback(int requestCode, String[] permissions, int[] grantResults) {
+
+                }
+            });
             return null;
         }
         return readFormFile(context, fileName);
@@ -114,6 +119,10 @@ public class VenvyFileUtil {
             fileName = Environment.getExternalStorageDirectory().getPath() + "/venvy/" + fileName;
         }
         File file = new File(fileName);
+        if (!file.exists()) {
+            file.mkdir();
+            return;
+        }
         if (!file.exists()) {
             VenvyLog.d("Error: file is not exists!");
             return;
