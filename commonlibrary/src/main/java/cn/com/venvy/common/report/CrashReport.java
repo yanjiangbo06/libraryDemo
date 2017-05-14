@@ -22,14 +22,4 @@ class CrashReport extends Report {
         reportInfoList.add(reportInfo);
         startReport(reportInfoList);
     }
-
-    public static void report(Exception e) {
-        if (e == null) {
-            VenvyLog.e("nullPointException for Report Exception value");
-        }
-        ReportInfo info = new ReportInfo();
-        info.level = ReportLevel.e;
-        info.message = e.fillInStackTrace().getMessage();
-        report(info);
-    }
 }

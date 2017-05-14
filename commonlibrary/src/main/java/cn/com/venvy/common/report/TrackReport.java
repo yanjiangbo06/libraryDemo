@@ -23,9 +23,4 @@ class TrackReport extends Report {
             cacheReportInfo(list);
         }
     }
-
-    public static void reportCache() {
-        List<ReportInfo> list = getReportInfoList();
-        startReport(list);
-    }
 }

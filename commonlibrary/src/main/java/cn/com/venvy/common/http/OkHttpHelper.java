@@ -10,6 +10,7 @@ import cn.com.venvy.common.http.base.BaseRequestConnect;
 import cn.com.venvy.common.http.base.IRequestHandler;
 import cn.com.venvy.common.http.base.IResponse;
 import cn.com.venvy.common.http.base.Request;
+import cn.com.venvy.common.http.base.RequestConnectStatus;
 import cn.com.venvy.common.utils.VenvyLog;
 import cn.com.venvy.okhttp3.Call;
 import cn.com.venvy.okhttp3.Callback;
@@ -27,7 +28,10 @@ class OkHttpHelper extends BaseRequestConnect {
 
     public OkHttpHelper() {
         okHttpClient = new OkHttpClient();
+        status = RequestConnectStatus.IDLE;
     }
+
+    private RequestConnectStatus status = RequestConnectStatus.NULL;
 
     @Override
     public void get(final Request request) {
@@ -134,6 +138,7 @@ class OkHttpHelper extends BaseRequestConnect {
         if (handler != null) {
             handler.startRequest(request);
         }
+        status = RequestConnectStatus.ACTIVE;
         Call call = okHttpClient.newCall(okRequest);
         call.enqueue(new Callback() {
             @Override
@@ -143,6 +148,7 @@ class OkHttpHelper extends BaseRequestConnect {
                     handler.requestFinish(request, new OKHttpResponse(response));
                 }
                 removeCallback(request);
+                status = RequestConnectStatus.IDLE;
                 VenvyLog.i(TAG, "request end, url = " + request.url);
             }
 
@@ -152,6 +158,7 @@ class OkHttpHelper extends BaseRequestConnect {
                 if (handler != null) {
                     handler.requestError(request, e);
                 }
+                status = RequestConnectStatus.IDLE;
                 VenvyLog.i(TAG, "request error, url = " + request.url);
             }
         });
@@ -189,5 +196,10 @@ class OkHttpHelper extends BaseRequestConnect {
     @Override
     public void abortAllRequest() {
         okHttpClient.dispatcher().cancelAll();
+    }
+
+    @Override
+    public RequestConnectStatus getConnectStatus() {
+        return status;
     }
 }

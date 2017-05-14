@@ -2,6 +2,7 @@ package cn.com.venvy.common.http;
 
 import cn.com.venvy.common.http.base.BaseRequestConnect;
 import cn.com.venvy.common.http.base.Request;
+import cn.com.venvy.common.http.base.RequestConnectStatus;
 
 /**
  * Created by yanjiangbo on 2017/4/27.
@@ -37,5 +38,10 @@ class VolleyHelper extends BaseRequestConnect {
     @Override
     public void abortAllRequest() {
 
+    }
+
+    @Override
+    public RequestConnectStatus getConnectStatus() {
+        return RequestConnectStatus.NULL;
     }
 }

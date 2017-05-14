@@ -9,6 +9,7 @@ import android.os.Parcelable;
 
 public class ReportInfo implements Parcelable {
 
+    public int id;
     public Report.ReportLevel level;
     public String message;
 
@@ -19,6 +20,7 @@ public class ReportInfo implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(this.id);
         dest.writeInt(this.level.getValue());
         dest.writeString(this.message);
     }
@@ -28,6 +30,7 @@ public class ReportInfo implements Parcelable {
     }
 
     protected ReportInfo(Parcel in) {
+        this.id = in.readInt();
         int leaveType = in.readInt();
         this.level = Report.ReportLevel.getLevel(leaveType);
         this.message = in.readString();
