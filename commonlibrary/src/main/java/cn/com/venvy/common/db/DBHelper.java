@@ -8,15 +8,21 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import java.util.List;
 
-public abstract class DBHelper extends SQLiteOpenHelper {
+import cn.com.venvy.Platform;
+
+public class DBHelper extends SQLiteOpenHelper {
 
     private List<String> databaseCreate;
 
-    protected DBHelper(Context context, String name, int version, List<String> databaseCreate) {
+    public DBHelper(String name, int version, List<String> databaseCreate) {
+        this(Platform.instance().getContext(), name, version, databaseCreate, null);
+    }
+
+    public DBHelper(Context context, String name, int version, List<String> databaseCreate) {
         this(context, name, version, databaseCreate, null);
     }
 
-    protected DBHelper(Context context, String name, int version, List<String> databaseCreate, CursorFactory factory) {
+    public DBHelper(Context context, String name, int version, List<String> databaseCreate, CursorFactory factory) {
         super(context, name, factory, version);
         this.databaseCreate = databaseCreate;
     }
@@ -46,8 +52,8 @@ public abstract class DBHelper extends SQLiteOpenHelper {
         upgradeDB(db, oldVersion, newVersion);
     }
 
-    protected abstract void upgradeDB(SQLiteDatabase db, int oldVersion, int newVersion);
+    protected void upgradeDB(SQLiteDatabase db, int oldVersion, int newVersion) {
 
-
+    }
 }
 

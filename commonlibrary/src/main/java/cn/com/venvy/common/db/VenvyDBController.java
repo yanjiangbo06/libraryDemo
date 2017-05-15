@@ -10,17 +10,17 @@ import cn.com.venvy.common.Exception.DBException;
  * Created by yanjiangbo on 2017/5/14.
  */
 
-public class VenvyDBUtil {
+public class VenvyDBController {
 
     private static DBHandler dbHandler;
 
-    public VenvyDBUtil() throws DBException {
+    public VenvyDBController() throws DBException {
         init();
     }
 
     DBHandler init() throws DBException {
         if (dbHandler == null) {
-            DBHelper dbHelper = new DBHelperImpl(DBConstants.DATABASE_NAME, DBConstants.DATABASE_VERSION, DBConstants.DB_CREATE_SQL);
+            DBHelper dbHelper = new DBHelper(DBConstants.DATABASE_NAME, DBConstants.DATABASE_VERSION, DBConstants.DB_CREATE_SQL);
             dbHandler = new DBHandler(dbHelper);
         }
         if (!dbHandler.isOpen()) {
@@ -30,7 +30,7 @@ public class VenvyDBUtil {
                 throw new DBException("Database init error!", e);
             }
         }
-        return this.dbHandler;
+        return dbHandler;
     }
 
     public void insert(String tableName, String columns[], String[] contents,
@@ -71,21 +71,12 @@ public class VenvyDBUtil {
         dbHandler.delete(tableName, whereClause, whereArgs);
     }
 
-    public void delete(String tableName, String columnName, String... columnValue) throws DBException {
-        if (dbHandler == null || !dbHandler.isOpen()) {
-            return;
-        }
-        String whereClause = columnName + "=?";
-        String whereArgs[] = columnValue;
-        dbHandler.delete(tableName, whereClause, whereArgs);
-    }
-
     public Cursor query(String tableName, String columnName, String... argsValue) {
         if (dbHandler == null || !dbHandler.isOpen()) {
             return null;
         }
         String querySQL = "select * from " + tableName + " where "
-                + columnName + " = ?";
+                + columnName + " =?";
         String[] selectionArgs = argsValue;
         Cursor cursor = dbHandler.query(querySQL, selectionArgs);
         return cursor;

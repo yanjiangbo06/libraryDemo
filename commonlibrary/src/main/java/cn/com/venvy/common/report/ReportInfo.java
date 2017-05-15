@@ -9,9 +9,10 @@ import android.os.Parcelable;
 
 public class ReportInfo implements Parcelable {
 
-    public int id;
+    public long id;
     public Report.ReportLevel level;
     public String message;
+    public String createTime;
 
     @Override
     public int describeContents() {
@@ -20,9 +21,10 @@ public class ReportInfo implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(this.id);
+        dest.writeLong(this.id);
         dest.writeInt(this.level.getValue());
         dest.writeString(this.message);
+        dest.writeString(this.createTime);
     }
 
     public ReportInfo() {
@@ -30,10 +32,11 @@ public class ReportInfo implements Parcelable {
     }
 
     protected ReportInfo(Parcel in) {
-        this.id = in.readInt();
+        this.id = in.readLong();
         int leaveType = in.readInt();
         this.level = Report.ReportLevel.getLevel(leaveType);
         this.message = in.readString();
+        this.createTime = in.readString();
     }
 
     public static final Parcelable.Creator<ReportInfo> CREATOR = new Parcelable.Creator<ReportInfo>() {

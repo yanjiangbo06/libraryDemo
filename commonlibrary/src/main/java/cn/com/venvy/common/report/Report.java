@@ -3,7 +3,6 @@ package cn.com.venvy.common.report;
 import android.database.Cursor;
 import android.text.TextUtils;
 
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -14,7 +13,7 @@ import java.util.List;
 
 import cn.com.venvy.common.Exception.DBException;
 import cn.com.venvy.common.db.DBConstants;
-import cn.com.venvy.common.db.VenvyDBUtil;
+import cn.com.venvy.common.db.VenvyDBController;
 import cn.com.venvy.common.http.HttpRequest;
 import cn.com.venvy.common.http.RequestFactory;
 import cn.com.venvy.common.http.base.IRequestConnect;
@@ -24,6 +23,7 @@ import cn.com.venvy.common.http.base.Request;
 import cn.com.venvy.common.http.base.RequestConnectStatus;
 import cn.com.venvy.common.utils.VenvyAesUtil;
 import cn.com.venvy.common.utils.VenvyAsyncTaskUtil;
+import cn.com.venvy.common.utils.VenvyIDHelper;
 import cn.com.venvy.common.utils.VenvyLog;
 import cn.com.venvy.common.utils.VenvyUIUtil;
 
@@ -41,7 +41,7 @@ public class Report {
 
     private static final IRequestConnect connect = RequestFactory.initConnect(RequestFactory.HttpPlugin.OK_HTTP);
 
-    private static VenvyDBUtil dbUtil;
+    private static VenvyDBController dbController;
 
     //最大缓存条数
     static final int MAX_CACHE_NUM = 5;
@@ -88,20 +88,13 @@ public class Report {
         if (level == null || TextUtils.isEmpty(reportString)) {
             return;
         }
-        if (dbUtil == null) {
-            try {
-                dbUtil = new VenvyDBUtil();
-            } catch (DBException e) {
-                //此处为了不造成死循环，不做投递操作
-                VenvyLog.e("", e);
-            }
-        }
         VenvyAsyncTaskUtil.doAsyncTask(KEY_ASYNC_TASK, new VenvyAsyncTaskUtil.IDoAsyncTask<Void, Void>() {
             @Override
             public Void doAsyncTask(Void... strings) throws Exception {
                 ReportInfo reportInfo = new ReportInfo();
                 reportInfo.level = level;
                 reportInfo.message = reportString;
+                reportInfo.createTime = System.currentTimeMillis() + "|" + VenvyIDHelper.getInstance().getReportId();
                 if (level == ReportLevel.e) {
                     CrashReport.report(reportInfo);
                 } else {
@@ -116,21 +109,24 @@ public class Report {
 
         if (e == null) {
             VenvyLog.e("nullPointException for Report Exception value");
+            return;
         }
-        report(ReportLevel.e, e.fillInStackTrace().toString());
+        StringBuilder builder = new StringBuilder();
+        StackTraceElement[] element = e.getStackTrace();
+        if (element != null) {
+            for (StackTraceElement i : element) {
+                builder.append(i.toString());
+                builder.append("\n");
+            }
+        }
+        report(ReportLevel.e, builder.toString());
     }
 
     private static void reportCache() {
-        if (dbUtil == null) {
-            try {
-                dbUtil = new VenvyDBUtil();
-            } catch (DBException e) {
-                //此处为了不造成死循环，不做投递操作
-                VenvyLog.e("", e);
-            }
+        if (getDbController() != null) {
+            List<ReportInfo> list = getReportInfoList();
+            startReport(list);
         }
-        List<ReportInfo> list = getReportInfoList();
-        startReport(list);
     }
 
     static void startReport(final List<ReportInfo> list) {
@@ -142,10 +138,9 @@ public class Report {
         if (connect.getConnectStatus() == RequestConnectStatus.ACTIVE) {
             return;
         }
-        HashMap<String, String> params = new HashMap<>();
-        String signParams = null;
         try {
-            signParams = VenvyAesUtil.encrypt(REPORT_AES_KEY, REPORT_AES_IV, reportInfoListToString(list));
+            HashMap<String, String> params = new HashMap<>();
+            String signParams = VenvyAesUtil.encrypt(REPORT_AES_KEY, REPORT_AES_IV, reportInfoListToString(list));
             params.put(REPORT_SERVER_KEY, signParams);
             Request request = HttpRequest.put(REPORT_URL, params);
             connect.connect(request, new IRequestHandler.RequestHandlerAdapter() {
@@ -165,19 +160,19 @@ public class Report {
         Cursor cursor = null;
         try {
             for (ReportInfo reportInfo : infoList) {
-                if (dbUtil != null) {
+                if (getDbController() != null) {
                     if (reportInfo.id != 0) {
-                        cursor = dbUtil.query(DBConstants.TABLE_NAMES[DBConstants.TABLE_REPORT], DBConstants.Report.COLUMNS[DBConstants.Report.REPORT_ID], new String[]{String.valueOf(reportInfo.id)});
+                        cursor = getDbController().query(DBConstants.TABLE_NAMES[DBConstants.TABLE_REPORT], DBConstants.ReportDB.COLUMNS[DBConstants.ReportDB.REPORT_ID], new String[]{String.valueOf(reportInfo.id)});
                         if (cursor != null) {
                             continue;
                         }
                     }
-                    dbUtil.insert(DBConstants.TABLE_NAMES[DBConstants.TABLE_REPORT], DBConstants.Report.COLUMNS, new String[]{String.valueOf(reportInfo.id), String.valueOf(reportInfo.level.getValue()), reportInfo.message}, 0);
-                    cursor = dbUtil.query(DBConstants.TABLE_NAMES[DBConstants.TABLE_REPORT]);
+                    getDbController().insert(DBConstants.TABLE_NAMES[DBConstants.TABLE_REPORT], DBConstants.ReportDB.COLUMNS, new String[]{String.valueOf(reportInfo.id), String.valueOf(reportInfo.level.getValue()), reportInfo.createTime, reportInfo.message}, 1);
+                    cursor = getDbController().query(DBConstants.TABLE_NAMES[DBConstants.TABLE_REPORT], DBConstants.ReportDB.COLUMNS[DBConstants.ReportDB.REPORT_CREATE_TIME], new String[]{reportInfo.createTime});
                     if (cursor != null && cursor.getCount() > 0) {
                         cursor.moveToLast();
-                        int id = cursor.getInt(DBConstants.Report.REPORT_ID);
-                        reportInfo.id = id;
+                        int _id = cursor.getInt(DBConstants.ReportDB.REPORT_ID);
+                        reportInfo.id = _id;
                     }
                 }
             }
@@ -195,14 +190,15 @@ public class Report {
 
         Cursor cursor = null;
         List<ReportInfo> list = new ArrayList<>();
-        if (dbUtil != null) {
-            cursor = dbUtil.query(DBConstants.TABLE_NAMES[DBConstants.TABLE_REPORT]);
+        if (getDbController() != null) {
+            cursor = getDbController().query(DBConstants.TABLE_NAMES[DBConstants.TABLE_REPORT]);
             if (cursor != null) {
                 while (cursor.moveToNext()) {
                     ReportInfo info = new ReportInfo();
-                    info.id = cursor.getInt(DBConstants.Report.REPORT_ID);
-                    info.level = ReportLevel.getLevel(cursor.getInt(DBConstants.Report.REPORT_LEAVEL));
-                    info.message = cursor.getColumnName(DBConstants.Report.REPORT_MESSAGE);
+                    info.id = cursor.getInt(DBConstants.ReportDB.REPORT_ID);
+                    info.level = ReportLevel.getLevel(cursor.getInt(DBConstants.ReportDB.REPORT_LEVEL));
+                    info.message = cursor.getColumnName(DBConstants.ReportDB.REPORT_MESSAGE);
+                    info.createTime = cursor.getColumnName(DBConstants.ReportDB.REPORT_CREATE_TIME);
                     list.add(info);
                 }
             }
@@ -213,17 +209,15 @@ public class Report {
         return list;
     }
 
-    static void deleteCache(List<ReportInfo> infoList) {
+    private static void deleteCache(List<ReportInfo> infoList) {
         try {
             if (infoList == null || infoList.size() == 0) {
                 return;
             }
-            String[] targetIds = new String[infoList.size()];
-            if (dbUtil != null) {
+            if (getDbController() != null) {
                 for (int i = 0; i < infoList.size(); i++) {
-                    targetIds[i] = String.valueOf(infoList.get(i).id);
+                    getDbController().delete(DBConstants.TABLE_NAMES[DBConstants.TABLE_REPORT], DBConstants.ReportDB.COLUMNS[DBConstants.ReportDB.REPORT_ID], String.valueOf(infoList.get(i).id));
                 }
-                dbUtil.delete(DBConstants.TABLE_NAMES[DBConstants.TABLE_REPORT], DBConstants.Report.COLUMNS[DBConstants.Report.REPORT_ID], targetIds);
             }
         } catch (DBException e) {
             e.printStackTrace();
@@ -240,7 +234,7 @@ public class Report {
         try {
             for (ReportInfo reportInfo : infoList) {
                 JSONObject jsonObject = new JSONObject();
-                jsonObject.put("leavel", reportInfo.level.getValue());
+                jsonObject.put("level", reportInfo.level.getValue());
                 jsonObject.put("message", reportInfo.message);
                 jsonArray.put(jsonObject);
             }
@@ -264,9 +258,21 @@ public class Report {
         }, POLLING_TIME);
     }
 
+    private static VenvyDBController getDbController() {
+        if (dbController == null) {
+            try {
+                dbController = new VenvyDBController();
+            } catch (DBException e) {
+                //此处为了不造成死循环，不做投递操作
+                VenvyLog.e("", e);
+            }
+        }
+        return dbController;
+    }
+
     public static void onDestroy() {
-        if (dbUtil != null) {
-            dbUtil.onDestroy();
+        if (getDbController() != null) {
+            getDbController().onDestroy();
         }
     }
 }
