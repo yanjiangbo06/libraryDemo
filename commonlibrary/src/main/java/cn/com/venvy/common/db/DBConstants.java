@@ -27,11 +27,12 @@ public class DBConstants {
     }
 
     public static class ReportDB implements ITable {
-        public static final String[] COLUMNS = {"report_id", "leavel", "create_time","message"};
+        public static final String[] COLUMNS = {"report_id", "leavel", "create_time", "tag", "message"};
         public static final int REPORT_ID = 0;// report_Id
         public static final int REPORT_LEVEL = 1;
         public static final int REPORT_CREATE_TIME = 2;
-        public static final int REPORT_MESSAGE = 3;
+        public static final int REPORT_TAG = 3;
+        public static final int REPORT_MESSAGE = 4;
 
         public String produceCreateSQL() {
             final String sql = "CREATE TABLE IF NOT EXISTS "
@@ -39,6 +40,8 @@ public class DBConstants {
                     + " INTEGER PRIMARY KEY AUTOINCREMENT," + COLUMNS[REPORT_LEVEL]
                     + " INTEGER NOT NULL,"
                     + COLUMNS[REPORT_CREATE_TIME]
+                    + " TEXT NOT NULL,"
+                    + COLUMNS[REPORT_TAG]
                     + " TEXT NOT NULL,"
                     + COLUMNS[REPORT_MESSAGE]
                     + " TEXT NOT NULL)";

@@ -11,6 +11,7 @@ public class ReportInfo implements Parcelable {
 
     public long id;
     public Report.ReportLevel level;
+    public String tag;
     public String message;
     public String createTime;
 
@@ -23,6 +24,7 @@ public class ReportInfo implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeLong(this.id);
         dest.writeInt(this.level.getValue());
+        dest.writeString(this.tag);
         dest.writeString(this.message);
         dest.writeString(this.createTime);
     }
@@ -35,6 +37,7 @@ public class ReportInfo implements Parcelable {
         this.id = in.readLong();
         int leaveType = in.readInt();
         this.level = Report.ReportLevel.getLevel(leaveType);
+        this.tag = in.readString();
         this.message = in.readString();
         this.createTime = in.readString();
     }

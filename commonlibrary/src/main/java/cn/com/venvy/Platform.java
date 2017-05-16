@@ -3,6 +3,7 @@ package cn.com.venvy;
 import android.content.Context;
 
 import cn.com.venvy.common.image.ImageFactory;
+import cn.com.venvy.common.observer.ObservableManager;
 import cn.com.venvy.common.report.Report;
 
 /**
@@ -47,5 +48,6 @@ public class Platform {
 
     public void onDestroy() {
         Report.onDestroy();
+        ObservableManager.getDefaultObserable().removeAllObserver();
     }
 }

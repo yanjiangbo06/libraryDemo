@@ -1,6 +1,7 @@
 package cn.com.venvy.common.report;
 
 import android.database.Cursor;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import org.json.JSONArray;
@@ -84,33 +85,17 @@ public class Report {
         startPolling();
     }
 
-    public static void report(final ReportLevel level, final String reportString) {
-        if (level == null || TextUtils.isEmpty(reportString)) {
-            return;
-        }
-        VenvyAsyncTaskUtil.doAsyncTask(KEY_ASYNC_TASK, new VenvyAsyncTaskUtil.IDoAsyncTask<Void, Void>() {
-            @Override
-            public Void doAsyncTask(Void... strings) throws Exception {
-                ReportInfo reportInfo = new ReportInfo();
-                reportInfo.level = level;
-                reportInfo.message = reportString;
-                reportInfo.createTime = System.currentTimeMillis() + "|" + VenvyIDHelper.getInstance().getReportId();
-                if (level == ReportLevel.e) {
-                    CrashReport.report(reportInfo);
-                } else {
-                    TrackReport.report(reportInfo);
-                }
-                return null;
-            }
-        }, null);
+    public static void report(@NonNull final ReportLevel level, @NonNull final String tag, @NonNull final String reportString) {
+        ReportInfo reportInfo = new ReportInfo();
+        reportInfo.level = level;
+        reportInfo.message = reportString;
+        reportInfo.tag = tag;
+        reportInfo.createTime = System.currentTimeMillis() + "|" + VenvyIDHelper.getInstance().getReportId();
+        report(reportInfo);
     }
 
-    public static void report(Exception e) {
+    public static void report(@NonNull Exception e) {
 
-        if (e == null) {
-            VenvyLog.e("nullPointException for Report Exception value");
-            return;
-        }
         StringBuilder builder = new StringBuilder();
         StackTraceElement[] element = e.getStackTrace();
         if (element != null) {
@@ -119,7 +104,26 @@ public class Report {
                 builder.append("\n");
             }
         }
-        report(ReportLevel.e, builder.toString());
+        report(ReportLevel.e, "crash", builder.toString());
+    }
+
+    public static void report(@NonNull final ReportInfo reportInfo) {
+        if (TextUtils.isEmpty(reportInfo.tag) || TextUtils.isEmpty(reportInfo.message) || reportInfo.level == null) {
+            VenvyLog.e("reportInfo is not vaild");
+            return;
+        }
+        VenvyAsyncTaskUtil.doAsyncTask(KEY_ASYNC_TASK, new VenvyAsyncTaskUtil.IDoAsyncTask<Void, Void>() {
+            @Override
+            public Void doAsyncTask(Void... strings) throws Exception {
+
+                if (reportInfo.level == ReportLevel.e) {
+                    CrashReport.report(reportInfo);
+                } else {
+                    TrackReport.report(reportInfo);
+                }
+                return null;
+            }
+        }, null);
     }
 
     private static void reportCache() {
@@ -167,7 +171,7 @@ public class Report {
                             continue;
                         }
                     }
-                    getDbController().insert(DBConstants.TABLE_NAMES[DBConstants.TABLE_REPORT], DBConstants.ReportDB.COLUMNS, new String[]{String.valueOf(reportInfo.id), String.valueOf(reportInfo.level.getValue()), reportInfo.createTime, reportInfo.message}, 1);
+                    getDbController().insert(DBConstants.TABLE_NAMES[DBConstants.TABLE_REPORT], DBConstants.ReportDB.COLUMNS, new String[]{String.valueOf(reportInfo.id), String.valueOf(reportInfo.level.getValue()), reportInfo.createTime, reportInfo.tag, reportInfo.message}, 1);
                     cursor = getDbController().query(DBConstants.TABLE_NAMES[DBConstants.TABLE_REPORT], DBConstants.ReportDB.COLUMNS[DBConstants.ReportDB.REPORT_CREATE_TIME], new String[]{reportInfo.createTime});
                     if (cursor != null && cursor.getCount() > 0) {
                         cursor.moveToLast();
@@ -199,6 +203,7 @@ public class Report {
                     info.level = ReportLevel.getLevel(cursor.getInt(DBConstants.ReportDB.REPORT_LEVEL));
                     info.message = cursor.getColumnName(DBConstants.ReportDB.REPORT_MESSAGE);
                     info.createTime = cursor.getColumnName(DBConstants.ReportDB.REPORT_CREATE_TIME);
+                    info.tag = cursor.getColumnName(DBConstants.ReportDB.REPORT_TAG);
                     list.add(info);
                 }
             }
@@ -235,6 +240,7 @@ public class Report {
             for (ReportInfo reportInfo : infoList) {
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.put("level", reportInfo.level.getValue());
+                jsonObject.put("tag", reportInfo.tag);
                 jsonObject.put("message", reportInfo.message);
                 jsonArray.put(jsonObject);
             }
