@@ -44,7 +44,7 @@ public abstract class OkHttpDownLoadRequestHandler extends IRequestHandler.Reque
 
         InputStream is = null;
         byte[] buf = new byte[2048];
-        int len = 0;
+
         FileOutputStream fos = null;
         ResponseBody okResponse = null;
         try {
@@ -57,6 +57,7 @@ public abstract class OkHttpDownLoadRequestHandler extends IRequestHandler.Reque
             }
             File file = new File(dir, destFileName);
             fos = new FileOutputStream(file);
+            int len = 0;
             while ((len = is.read(buf)) != -1) {
                 fos.write(buf, 0, len);
             }
