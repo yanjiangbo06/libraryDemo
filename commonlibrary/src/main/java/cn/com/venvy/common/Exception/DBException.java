@@ -1,4 +1,4 @@
-package cn.com.venvy.common.Exception;
+package cn.com.venvy.common.exception;
 
 public class DBException extends IException {
 
