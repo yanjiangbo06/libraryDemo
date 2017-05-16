@@ -26,7 +26,7 @@ class OkHttpHelper extends BaseRequestConnect {
     private OkHttpClient okHttpClient;
     private SparseArray<Call> callSparseArray = new SparseArray<>();
 
-    public OkHttpHelper() {
+    OkHttpHelper() {
         okHttpClient = new OkHttpClient();
         status = RequestConnectStatus.IDLE;
     }

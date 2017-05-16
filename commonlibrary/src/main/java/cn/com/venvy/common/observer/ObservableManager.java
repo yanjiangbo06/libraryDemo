@@ -3,6 +3,7 @@ package cn.com.venvy.common.observer;
 
 import android.util.SparseArray;
 
+import cn.com.venvy.common.report.Report;
 import cn.com.venvy.common.utils.VenvyLog;
 
 
