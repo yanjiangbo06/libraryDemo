@@ -45,4 +45,7 @@ public class Platform {
         return mApplicationContext;
     }
 
+    public void onDestroy() {
+        Report.onDestroy();
+    }
 }

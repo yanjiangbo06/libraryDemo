@@ -37,7 +37,6 @@ dependencies {
     // 支持 GIF 动图，需要添加
     provided 'com.facebook.fresco:animated-gif:1.1.0'
     provided 'com.github.bumptech.glide:glide:3.7.0'
-    compile 'com.alibaba:fastjson:1.1.57.android'
 }
 
 

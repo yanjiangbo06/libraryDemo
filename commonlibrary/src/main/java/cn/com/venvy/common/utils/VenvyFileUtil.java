@@ -40,22 +40,69 @@ public class VenvyFileUtil {
      * @throws IOException
      *             mContext.getCacheDir() .getAbsolutePath()
      */
-    public static String readFile(final Context context, @NonNull final String fileName) {
-        if (VenvyAPIUtil.isSupport(23) && !PermissionCheckHelper.isPermissionGranted(context, Manifest.permission.READ_EXTERNAL_STORAGE) && !PermissionCheckHelper.instance().isRequesting()) {
+    public static String readFile(final Context context, @NonNull final String fileName, PermissionCheckHelper.PermissionCallbackListener callbackListener) {
+        if (VenvyAPIUtil.isSupport(23) && !PermissionCheckHelper.isPermissionGranted(context, Manifest.permission.READ_EXTERNAL_STORAGE)) {
+            if (PermissionCheckHelper.instance().isRequesting()) {
+                callbackListener.onPermissionCheckCallback(-1, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, new int[]{PackageManager.PERMISSION_DENIED});
+                return null;
+            }
             PermissionCheckHelper.instance().requestPermissions(context, 201, new String[]{
                     Manifest.permission.READ_EXTERNAL_STORAGE
             }, new String[]{
-                    "外部文件权限"
-            }, new PermissionCheckHelper.PermissionCallbackListener() {
+                    "外部文件读取权限"
+            }, callbackListener == null ? new PermissionCheckHelper.PermissionCallbackListener() {
                 @Override
                 public void onPermissionCheckCallback(int requestCode, String[] permissions, int[] grantResults) {
 
                 }
-            });
+            } : callbackListener);
             return null;
         }
         return readFormFile(context, fileName);
     }
+
+    public static void saveFile(final Context context, @NonNull final String fileName, final String content, PermissionCheckHelper.PermissionCallbackListener callbackListener) {
+        if (VenvyAPIUtil.isSupport(23) && PermissionCheckHelper.isPermissionGranted(context, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            if (PermissionCheckHelper.instance().isRequesting()) {
+                callbackListener.onPermissionCheckCallback(-1, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, new int[]{PackageManager.PERMISSION_DENIED});
+                return;
+            }
+            PermissionCheckHelper.instance().requestPermissions(context, 202, new String[]{
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+            }, new String[]{
+                    "外部文件写入权限"
+            }, callbackListener == null ? new PermissionCheckHelper.PermissionCallbackListener() {
+                @Override
+                public void onPermissionCheckCallback(int requestCode, String[] permissions, int[] grantResults) {
+
+                }
+            } : callbackListener);
+        } else {
+            writeToFile(context, fileName, content);
+        }
+    }
+
+    public static void deleteFile(final Context context, @NonNull final String fileName, PermissionCheckHelper.PermissionCallbackListener callbackListener) {
+        if (VenvyAPIUtil.isSupport(23) && PermissionCheckHelper.isPermissionGranted(context, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            if (PermissionCheckHelper.instance().isRequesting()) {
+                callbackListener.onPermissionCheckCallback(-1, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, new int[]{PackageManager.PERMISSION_DENIED});
+                return;
+            }
+            PermissionCheckHelper.instance().requestPermissions(context, 202, new String[]{
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+            }, new String[]{
+                    "外部文件写入权限"
+            }, callbackListener == null ? new PermissionCheckHelper.PermissionCallbackListener() {
+                @Override
+                public void onPermissionCheckCallback(int requestCode, String[] permissions, int[] grantResults) {
+
+                }
+            } : callbackListener);
+        } else {
+            deleteFile(context, fileName);
+        }
+    }
+
 
     private static String readFormFile(Context context, @NonNull String fileName) {
         StringBuilder res = new StringBuilder();
@@ -91,25 +138,6 @@ public class VenvyFileUtil {
             }
         }
         return res.toString();
-    }
-
-    public static void saveFile(final Context context, @NonNull final String fileName, final String content) {
-        if (VenvyAPIUtil.isSupport(23) && PermissionCheckHelper.isPermissionGranted(context, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-            PermissionCheckHelper.instance().requestPermissions(context, 202, new String[]{
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE
-            }, new String[]{
-                    "外部文件权限"
-            }, new PermissionCheckHelper.PermissionCallbackListener() {
-                @Override
-                public void onPermissionCheckCallback(int requestCode, String[] permissions, int[] grantResults) {
-                    if (requestCode == 202 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                        writeToFile(context, fileName, content);
-                    }
-                }
-            });
-        } else {
-            writeToFile(context, fileName, content);
-        }
     }
 
     private static void writeToFile(Context context, @NonNull String fileName, String content) {
@@ -152,7 +180,7 @@ public class VenvyFileUtil {
         }
     }
 
-    public static void deleteFile(Context context, @NonNull String fileName) {
+    private static void deleteFile(Context context, @NonNull String fileName) {
         if (context != null) {
             fileName = context.getCacheDir().getAbsolutePath() + "/" + fileName;
         } else {

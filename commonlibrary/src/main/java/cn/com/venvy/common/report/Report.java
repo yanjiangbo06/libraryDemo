@@ -1,27 +1,29 @@
 package cn.com.venvy.common.report;
 
-import android.content.Context;
+import android.database.Cursor;
 import android.text.TextUtils;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
-import com.facebook.common.file.FileUtils;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import cn.com.venvy.Platform;
+import cn.com.venvy.common.Exception.DBException;
+import cn.com.venvy.common.db.DBConstants;
+import cn.com.venvy.common.db.VenvyDBController;
 import cn.com.venvy.common.http.HttpRequest;
 import cn.com.venvy.common.http.RequestFactory;
+import cn.com.venvy.common.http.base.IRequestConnect;
 import cn.com.venvy.common.http.base.IRequestHandler;
 import cn.com.venvy.common.http.base.IResponse;
 import cn.com.venvy.common.http.base.Request;
+import cn.com.venvy.common.http.base.RequestConnectStatus;
 import cn.com.venvy.common.utils.VenvyAesUtil;
 import cn.com.venvy.common.utils.VenvyAsyncTaskUtil;
-import cn.com.venvy.common.utils.VenvyBase64;
-import cn.com.venvy.common.utils.VenvyFileUtil;
+import cn.com.venvy.common.utils.VenvyIDHelper;
 import cn.com.venvy.common.utils.VenvyLog;
 import cn.com.venvy.common.utils.VenvyUIUtil;
 
@@ -33,12 +35,13 @@ public class Report {
 
     private static final String REPORT_AES_KEY = "8lgK5fr5yatOfHio";
     private static final String REPORT_AES_IV = "lx7eZhVoBEnKXELF";
-    //   private static final String REPORT_URL = "http://test-log.videojj.com/api/log";
-    private static final String REPORT_URL = "http://192.168.0.63:8080/api/log";
+    private static final String REPORT_URL = "http://test-log.videojj.com/api/log";
     private static final String REPORT_SERVER_KEY = "info";
     private static final String KEY_ASYNC_TASK = "Report_report";
 
-    private static final String REPORT_CACHE_FILE_NAME = "Veney-report-cache";
+    private static final IRequestConnect connect = RequestFactory.initConnect(RequestFactory.HttpPlugin.OK_HTTP);
+
+    private static VenvyDBController dbController;
 
     //最大缓存条数
     static final int MAX_CACHE_NUM = 5;
@@ -91,6 +94,7 @@ public class Report {
                 ReportInfo reportInfo = new ReportInfo();
                 reportInfo.level = level;
                 reportInfo.message = reportString;
+                reportInfo.createTime = System.currentTimeMillis() + "|" + VenvyIDHelper.getInstance().getReportId();
                 if (level == ReportLevel.e) {
                     CrashReport.report(reportInfo);
                 } else {
@@ -102,35 +106,49 @@ public class Report {
     }
 
     public static void report(Exception e) {
-        CrashReport.report(e);
+
+        if (e == null) {
+            VenvyLog.e("nullPointException for Report Exception value");
+            return;
+        }
+        StringBuilder builder = new StringBuilder();
+        StackTraceElement[] element = e.getStackTrace();
+        if (element != null) {
+            for (StackTraceElement i : element) {
+                builder.append(i.toString());
+                builder.append("\n");
+            }
+        }
+        report(ReportLevel.e, builder.toString());
     }
 
     private static void reportCache() {
-        TrackReport.reportCache();
+        if (getDbController() != null) {
+            List<ReportInfo> list = getReportInfoList();
+            startReport(list);
+        }
     }
 
     static void startReport(final List<ReportInfo> list) {
         if (list == null || list.size() == 0) {
             return;
         }
-        HashMap<String, String> params = new HashMap<>();
-        String signParams = null;
+        cacheReportInfo(list);
+        // 避免重复发送，正在发送的时候所有的请求只入到cache而等待上次投递结果
+        if (connect.getConnectStatus() == RequestConnectStatus.ACTIVE) {
+            return;
+        }
         try {
-            signParams = VenvyAesUtil.encrypt(REPORT_AES_KEY, REPORT_AES_IV, reportInfoListToString(list));
+            HashMap<String, String> params = new HashMap<>();
+            String signParams = VenvyAesUtil.encrypt(REPORT_AES_KEY, REPORT_AES_IV, reportInfoListToString(list));
             params.put(REPORT_SERVER_KEY, signParams);
             Request request = HttpRequest.put(REPORT_URL, params);
-            RequestFactory.initConnect(RequestFactory.HttpPlugin.OK_HTTP).connect(request, new IRequestHandler.RequestHandlerAdapter() {
+            connect.connect(request, new IRequestHandler.RequestHandlerAdapter() {
                 @Override
                 public void requestFinish(Request request, IResponse response) {
                     if (response.isSuccess()) {
-                        clearCache();
+                        deleteCache(list);
                     }
-                }
-
-                @Override
-                public void startRequest(Request request) {
-                    super.startRequest(request);
-                    cacheReportInfo(list);
                 }
             });
         } catch (Exception e) {
@@ -139,67 +157,92 @@ public class Report {
     }
 
     static void cacheReportInfo(List<ReportInfo> infoList) {
-        if (infoList == null || infoList.size() == 0) {
-            return;
+        Cursor cursor = null;
+        try {
+            for (ReportInfo reportInfo : infoList) {
+                if (getDbController() != null) {
+                    if (reportInfo.id != 0) {
+                        cursor = getDbController().query(DBConstants.TABLE_NAMES[DBConstants.TABLE_REPORT], DBConstants.ReportDB.COLUMNS[DBConstants.ReportDB.REPORT_ID], new String[]{String.valueOf(reportInfo.id)});
+                        if (cursor != null) {
+                            continue;
+                        }
+                    }
+                    getDbController().insert(DBConstants.TABLE_NAMES[DBConstants.TABLE_REPORT], DBConstants.ReportDB.COLUMNS, new String[]{String.valueOf(reportInfo.id), String.valueOf(reportInfo.level.getValue()), reportInfo.createTime, reportInfo.message}, 1);
+                    cursor = getDbController().query(DBConstants.TABLE_NAMES[DBConstants.TABLE_REPORT], DBConstants.ReportDB.COLUMNS[DBConstants.ReportDB.REPORT_CREATE_TIME], new String[]{reportInfo.createTime});
+                    if (cursor != null && cursor.getCount() > 0) {
+                        cursor.moveToLast();
+                        int _id = cursor.getInt(DBConstants.ReportDB.REPORT_ID);
+                        reportInfo.id = _id;
+                    }
+                }
+            }
+        } catch (DBException e) {
+            e.printStackTrace();
+            VenvyLog.e("", e);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
         }
-        saveToFile(reportInfoListToString(infoList));
     }
 
     static List<ReportInfo> getReportInfoList() {
-        String cacheString = getByFile();
-        if (TextUtils.isEmpty(cacheString)) {
-            return null;
-        }
+
+        Cursor cursor = null;
         List<ReportInfo> list = new ArrayList<>();
-        JSONArray jsonArray = JSONArray.parseArray(cacheString);
-        for (int i = 0; jsonArray != null && i < jsonArray.size(); i++) {
-            JSONObject jsonObject = jsonArray.getJSONObject(i);
-            ReportInfo reportInfo = new ReportInfo();
-            reportInfo.message = jsonObject.getString("message");
-            reportInfo.level = ReportLevel.getLevel(jsonObject.getIntValue("level"));
-            list.add(reportInfo);
+        if (getDbController() != null) {
+            cursor = getDbController().query(DBConstants.TABLE_NAMES[DBConstants.TABLE_REPORT]);
+            if (cursor != null) {
+                while (cursor.moveToNext()) {
+                    ReportInfo info = new ReportInfo();
+                    info.id = cursor.getInt(DBConstants.ReportDB.REPORT_ID);
+                    info.level = ReportLevel.getLevel(cursor.getInt(DBConstants.ReportDB.REPORT_LEVEL));
+                    info.message = cursor.getColumnName(DBConstants.ReportDB.REPORT_MESSAGE);
+                    info.createTime = cursor.getColumnName(DBConstants.ReportDB.REPORT_CREATE_TIME);
+                    list.add(info);
+                }
+            }
+        }
+        if (cursor != null) {
+            cursor.close();
         }
         return list;
+    }
+
+    private static void deleteCache(List<ReportInfo> infoList) {
+        try {
+            if (infoList == null || infoList.size() == 0) {
+                return;
+            }
+            if (getDbController() != null) {
+                for (int i = 0; i < infoList.size(); i++) {
+                    getDbController().delete(DBConstants.TABLE_NAMES[DBConstants.TABLE_REPORT], DBConstants.ReportDB.COLUMNS[DBConstants.ReportDB.REPORT_ID], String.valueOf(infoList.get(i).id));
+                }
+            }
+        } catch (DBException e) {
+            e.printStackTrace();
+            VenvyLog.e("DB delete error : ", e);
+        }
     }
 
 
     private static String reportInfoListToString(List<ReportInfo> infoList) {
         if (infoList == null || infoList.size() == 0) {
-            return null;
+            return "";
         }
         JSONArray jsonArray = new JSONArray();
-        for (int i = 0; i < infoList.size(); i++) {
-            ReportInfo reportInfo = infoList.get(i);
-            try {
+        try {
+            for (ReportInfo reportInfo : infoList) {
                 JSONObject jsonObject = new JSONObject();
-                jsonObject.put("leave", reportInfo.level.getValue());
+                jsonObject.put("level", reportInfo.level.getValue());
                 jsonObject.put("message", reportInfo.message);
-                jsonArray.add(jsonObject);
-            } catch (JSONException e) {
-                VenvyLog.e("", e);
-                //忽略此处的异常，如果此处添加report，可能会引起死循环
+                jsonArray.put(jsonObject);
             }
+        } catch (JSONException e) {
+            e.printStackTrace();
+            VenvyLog.e("JSON error : ", e);
         }
-        return jsonArray.toJSONString();
-    }
-
-    private static void saveToFile(String s) {
-        if (TextUtils.isEmpty(s)) {
-            return;
-        }
-        Context context = Platform.instance().getContext();
-        VenvyFileUtil.saveFile(context, REPORT_CACHE_FILE_NAME, s);
-
-    }
-
-    private static String getByFile() {
-        Context context = Platform.instance().getContext();
-        return VenvyFileUtil.readFile(context, REPORT_CACHE_FILE_NAME);
-    }
-
-    private static void clearCache() {
-        Context context = Platform.instance().getContext();
-        VenvyFileUtil.deleteFile(context, REPORT_CACHE_FILE_NAME);
+        return jsonArray.toString();
     }
 
     /**
@@ -213,5 +256,23 @@ public class Report {
                 startPolling();
             }
         }, POLLING_TIME);
+    }
+
+    private static VenvyDBController getDbController() {
+        if (dbController == null) {
+            try {
+                dbController = new VenvyDBController();
+            } catch (DBException e) {
+                //此处为了不造成死循环，不做投递操作
+                VenvyLog.e("", e);
+            }
+        }
+        return dbController;
+    }
+
+    public static void onDestroy() {
+        if (getDbController() != null) {
+            getDbController().onDestroy();
+        }
     }
 }

@@ -7,4 +7,6 @@ package cn.com.venvy.common.http.base;
 public interface IRequestConnect {
 
     void connect(Request request, IRequestHandler handler);
+
+    RequestConnectStatus getConnectStatus();
 }
