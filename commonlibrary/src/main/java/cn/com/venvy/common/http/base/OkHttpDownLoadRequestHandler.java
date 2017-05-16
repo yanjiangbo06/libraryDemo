@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import cn.com.venvy.common.exception.HttpException;
 import cn.com.venvy.okhttp3.ResponseBody;
 
 /**
@@ -16,14 +17,9 @@ public abstract class OkHttpDownLoadRequestHandler extends IRequestHandler.Reque
      * 目标文件存储的文件夹路径
      */
     private String destFileDir;
-    /**
-     * 目标文件存储的文件名
-     */
-    private String destFileName;
 
-    public OkHttpDownLoadRequestHandler(String destFileDir, String destFileName) {
-        this.destFileDir = destFileDir;
-        this.destFileName = destFileName;
+    public OkHttpDownLoadRequestHandler(String filePath) {
+        this.destFileDir = filePath;
     }
 
 
@@ -32,7 +28,7 @@ public abstract class OkHttpDownLoadRequestHandler extends IRequestHandler.Reque
         if (response.isSuccess()) {
             startDownLoad(response);
         } else {
-            requestError(request, null);
+            requestError(request, new HttpException(request.url + "  download error"));
         }
     }
 
@@ -43,7 +39,6 @@ public abstract class OkHttpDownLoadRequestHandler extends IRequestHandler.Reque
     private void startDownLoad(IResponse response) {
 
         InputStream is = null;
-        byte[] buf = new byte[2048];
 
         FileOutputStream fos = null;
         ResponseBody okResponse = null;
@@ -51,13 +46,16 @@ public abstract class OkHttpDownLoadRequestHandler extends IRequestHandler.Reque
             okResponse = (ResponseBody) response.getData();
             is = okResponse.byteStream();
 
-            File dir = new File(destFileDir);
-            if (!dir.exists()) {
-                dir.mkdirs();
+            File file = new File(destFileDir);
+            if (!file.exists()) {
+                file.mkdirs();
+            }else{
+                file.delete();
             }
-            File file = new File(dir, destFileName);
+
             fos = new FileOutputStream(file);
             int len = 0;
+            byte[] buf = new byte[2048];
             while ((len = is.read(buf)) != -1) {
                 fos.write(buf, 0, len);
             }
