@@ -5,7 +5,7 @@ package cn.com.venvy.common.http.base;
  */
 
 public interface IResponse {
-
+    Object getHeaders();
     Object getData();
     boolean isSuccess();
 }
