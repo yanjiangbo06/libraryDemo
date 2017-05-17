@@ -62,6 +62,7 @@ public abstract class BaseRequestConnect implements IRequestConnect {
         VenvyLog.i(TAG,"start Request, Url = " + request.url);
     }
 
+    @Override
     public boolean abort(Request request) {
         if (request == null) {
             VenvyLog.w("request can't be null, please check");
@@ -75,7 +76,7 @@ public abstract class BaseRequestConnect implements IRequestConnect {
             return false;
         }
     }
-
+    @Override
     public boolean abortAll() {
         requestCallBackArray.clear();
         abortAllRequest();
