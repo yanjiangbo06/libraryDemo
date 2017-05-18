@@ -25,7 +25,6 @@ import cn.com.venvy.common.http.base.RequestConnectStatus;
 import cn.com.venvy.common.utils.VenvyAesUtil;
 import cn.com.venvy.common.utils.VenvyAsyncTaskUtil;
 import cn.com.venvy.common.utils.VenvyGzipUtil;
-import cn.com.venvy.common.utils.VenvyIDHelper;
 import cn.com.venvy.common.utils.VenvyLog;
 import cn.com.venvy.common.utils.VenvyUIUtil;
 
@@ -37,8 +36,8 @@ public class Report {
 
     private static final String REPORT_AES_KEY = "8lgK5fr5yatOfHio";
     private static final String REPORT_AES_IV = "lx7eZhVoBEnKXELF";
-    //    private static final String REPORT_URL = "http://test-log.videojj.com/api/log";
-    private static final String REPORT_URL = "http://192.168.2.234:8080/api/log";
+    private static final String REPORT_URL = "http://test-log.videojj.com/api/log";
+    //private static final String REPORT_URL = "http://192.168.2.234:8080/api/log";
     private static final String REPORT_SERVER_KEY = "info";
     private static final String KEY_ASYNC_TASK = "Report_report";
 
@@ -113,7 +112,7 @@ public class Report {
         reportInfo.level = level;
         reportInfo.message = reportString;
         reportInfo.tag = tag;
-        reportInfo.createTime = System.currentTimeMillis() + "|" + VenvyIDHelper.getInstance().getReportId();
+        reportInfo.createTime = String.valueOf(System.currentTimeMillis());
         report(reportInfo);
     }
 
@@ -141,7 +140,7 @@ public class Report {
             VenvyLog.e("reportInfo is not vaild");
             return;
         }
-        reportInfo.createTime = System.currentTimeMillis() + "|" + VenvyIDHelper.getInstance().getReportId();
+        reportInfo.createTime = String.valueOf(System.currentTimeMillis());
         cacheReportInfo(reportInfo);
         long count = getTotalCacheNum();
         if (reportInfo.level == ReportLevel.e || count > MAX_CACHE_NUM) {
@@ -153,7 +152,7 @@ public class Report {
         startReport();
     }
 
-    static void startReport() {
+    private static void startReport() {
 
         VenvyAsyncTaskUtil.doAsyncTask(KEY_ASYNC_TASK, new VenvyAsyncTaskUtil.IDoAsyncTask<Void, Void>() {
             @Override
@@ -166,11 +165,11 @@ public class Report {
                 try {
                     HashMap<String, String> params = new HashMap<>();
                     String reportString = reportInfoListToString(list);
-                    byte[] gzipByte = VenvyGzipUtil.compress(reportString);
-                    if (gzipByte == null) {
+                    String gzipString = VenvyGzipUtil.compress(reportString);
+                    if (gzipString == null) {
                         return null;
                     }
-                    String signParams = VenvyAesUtil.encrypt(REPORT_AES_KEY, REPORT_AES_IV, gzipByte);
+                    String signParams = VenvyAesUtil.encrypt(REPORT_AES_KEY, REPORT_AES_IV, gzipString);
                     params.put(REPORT_SERVER_KEY, signParams);
                     Request request = HttpRequest.put(REPORT_URL, params);
                     connect.connect(request, new IRequestHandler.RequestHandlerAdapter() {
