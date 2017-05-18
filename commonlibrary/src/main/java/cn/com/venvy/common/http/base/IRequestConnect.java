@@ -9,4 +9,8 @@ public interface IRequestConnect {
     void connect(Request request, IRequestHandler handler);
 
     RequestConnectStatus getConnectStatus();
+
+    boolean abort(Request request);
+
+    boolean abortAll();
 }

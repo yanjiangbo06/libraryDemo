@@ -62,6 +62,7 @@ public abstract class BaseRequestConnect implements IRequestConnect {
         VenvyLog.i(TAG,"start Request, Url = " + request.url);
     }
 
+    @Override
     public boolean abort(Request request) {
         if (request == null) {
             VenvyLog.w("request can't be null, please check");
@@ -76,6 +77,7 @@ public abstract class BaseRequestConnect implements IRequestConnect {
         }
     }
 
+    @Override
     public boolean abortAll() {
         requestCallBackArray.clear();
         abortAllRequest();
@@ -117,7 +119,7 @@ public abstract class BaseRequestConnect implements IRequestConnect {
     private static final String USER_AGENT = "User-Agent";
     private static final String OS_VERSION = "os-version";
     private static final String UDID = "udid";
-    private static final String TOKEN = "token";
+    private static final String APP_KEY = "appkey";
     private static final String IP = "ip";
     private static final String NETWORK = "network";
     private static final String PLATFORM_ID = "3rd-platform-id";
@@ -144,8 +146,8 @@ public abstract class BaseRequestConnect implements IRequestConnect {
             headers.put(PLATFORM_ID, platformInfo.getThirdPlatformId());
             headers.put(CYTRON_VERSION, platformInfo.getServiceVersion());
             headers.put(BU, platformInfo.getBuId());
+            headers.put(APP_KEY, platformInfo.getAppKey());
         }
-        headers.put(TOKEN, "");
         headers.put(USER_AGENT, VenvyDeviceUtil.getUserAgent());
         headers.put(OS_VERSION, VenvyDeviceUtil.getOsVersion());
         headers.put(IP, VenvyDeviceUtil.getLocalIPAddress());

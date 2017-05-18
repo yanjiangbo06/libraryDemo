@@ -10,6 +10,7 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.text.TextUtils;
 import android.util.Log;
@@ -68,11 +69,11 @@ public class PermissionHandlerActivity extends Activity implements ActivityCompa
         if (tipMsgs == null || tipMsgs.length == 0) {
             return "";
         }
-        String tip = "";
+        StringBuilder builder = new StringBuilder();
         for (String msg : tipMsgs) {
-            tip += msg;
+            builder.append(msg);
         }
-        return tip;
+        return builder.toString();
     }
 
 
@@ -80,37 +81,31 @@ public class PermissionHandlerActivity extends Activity implements ActivityCompa
      * 被拒绝的权限并且shouldShowRequestPermissionRationale返回false就是用户选中Never Ask Again的权限
      * 弹框提示用户去设置里授予权限，不请求权限
      *
-     * @param permissionArray
-     * @param messageArray
      * @return true表示处理了Never Ask Again
      */
     private boolean handleNeverAsk(final String[] permissionArray, String[] messageArray, int[] grantResults) {
         boolean hasNeverAsk = false;
-        String rationaleMsg = "";
+        StringBuilder builder = new StringBuilder();
         for (int index = 0; index < permissionArray.length && grantResults[index] == PackageManager.PERMISSION_DENIED; ++index) {
             String permission = permissionArray[index];
             if (!ActivityCompat.shouldShowRequestPermissionRationale(this, permission)) {
                 hasNeverAsk = true;
                 if (!messageArray[index].isEmpty()) {
-                    rationaleMsg += messageArray[index];
+                    builder.append(messageArray[index]);
                 }
             }
         }
         if (hasNeverAsk) {
-            showNeverAskRationaleDialog(this, rationaleMsg);
+            showNeverAskRationaleDialog(this, builder.toString());
         }
         return hasNeverAsk;
     }
 
     /**
      * 权限请求结果回调
-     *
-     * @param requestCode
-     * @param permissions
-     * @param grantResults
      */
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, int[] grantResults) {
         if (PERMISSION_REQUEST_CODE == requestCode) {
             if (requestInfo == null) {
                 requestNextPermission();
@@ -146,10 +141,6 @@ public class PermissionHandlerActivity extends Activity implements ActivityCompa
 
     /**
      * 处理Never Ask Again情况，用户返回后再次去请求权限来获取最终的权限请求结果
-     *
-     * @param requestCode
-     * @param resultCode
-     * @param data
      */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -166,9 +157,6 @@ public class PermissionHandlerActivity extends Activity implements ActivityCompa
     /**
      * 处理Never Ask Again
      * 自定义权限请求解释提示框，带有设置引导
-     *
-     * @param context
-     * @param message
      */
     private void showNeverAskRationaleDialog(Context context, String message) {
         if (this.isFinishing()) {

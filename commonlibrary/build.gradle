@@ -1,4 +1,5 @@
 apply plugin: 'com.android.library'
+apply plugin: 'com.novoda.bintray-release'
 
 android {
     compileSdkVersion 25
@@ -9,9 +10,6 @@ android {
         targetSdkVersion 25
         versionCode 1
         versionName "1.0"
-
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-
     }
 
     lintOptions {
@@ -28,9 +26,6 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    })
     compile 'com.android.support:appcompat-v7:25.3.1'
     // 其他依赖
     provided 'com.facebook.fresco:fresco:1.1.0'
@@ -39,19 +34,12 @@ dependencies {
     provided 'com.github.bumptech.glide:glide:3.7.0'
 }
 
-
-
-task deleteOldJar(type: Delete) {
-    delete 'build/outputs/venvy_common_1.0.jar'
+//添加
+publish {
+    userOrg = 'videoli'//bintray.com用户名
+    groupId = 'com.videoli'//jcenter上的路径
+    artifactId = 'venvy_library'//项目名称
+    publishVersion = '1.0.0'//版本号
+    desc = 'init 1.0.0 version'//描述，不重要
+    website = 'http://videojj.com'//网站，不重要；尽量模拟github上的地址，例如我这样的；当然你有地址最好了
 }
-
-//task to export contents as jar
-task exportJar(type: Copy) {
-    from('build/intermediates/bundles/release/')
-    into('build/outputs/')
-    include('classes.jar')
-    ///Rename the jar
-    rename('classes.jar', 'venvy_common_1.0.jar')
-}
-
-exportJar.dependsOn(deleteOldJar, build)

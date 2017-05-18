@@ -20,7 +20,7 @@ public class DBHandler {
         dbHelper.close();
     }
 
-    public SQLiteDatabase getWriteableDatabase()
+    public SQLiteDatabase getWritableDatabase()
             throws DBException {
         try {
             db = dbHelper.getWritableDatabase();
@@ -31,7 +31,7 @@ public class DBHandler {
     }
 
     public void openDatabase() throws DBException {
-        this.getWriteableDatabase();
+        this.getWritableDatabase();
     }
 
     public boolean isOpen() {

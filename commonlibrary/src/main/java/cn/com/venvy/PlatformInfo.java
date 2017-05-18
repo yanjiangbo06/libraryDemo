@@ -1,5 +1,8 @@
 package cn.com.venvy;
 
+import android.content.Context;
+import android.os.Build;
+
 /**
  * Created by yanjiangbo on 2017/5/2.
  */
@@ -10,12 +13,16 @@ public class PlatformInfo {
     final String mThirdPlatformId;
     final String mServiceVersion;
     final String mBuId;
+    final String mAppKey;
+    final Context context;
 
     private PlatformInfo(Builder builder) {
         mSdkVersion = builder.mSdkVersion;
         mThirdPlatformId = builder.mThirdPlatformId;
         mServiceVersion = builder.mServiceVersion;
         mBuId = builder.mBuId;
+        mAppKey = builder.mAppKey;
+        context = builder.context;
     }
 
     public String getSdkVersion() {
@@ -34,12 +41,22 @@ public class PlatformInfo {
         return mBuId;
     }
 
+    public String getAppKey() {
+        return mAppKey;
+    }
+
+    public Context getContext() {
+        return context;
+    }
+
     public static class Builder {
 
         private String mSdkVersion;
         private String mThirdPlatformId;
         private String mServiceVersion;
         private String mBuId;
+        private String mAppKey;
+        private Context context;
 
         /**
          * 设置当前SDK发布版本号
@@ -81,6 +98,16 @@ public class PlatformInfo {
          */
         public Builder setBuId(String buId) {
             this.mBuId = buId;
+            return this;
+        }
+
+        public Builder setAppKey(String appKey) {
+            this.mAppKey = appKey;
+            return this;
+        }
+
+        public Builder setApplicationContext(Context context) {
+            this.context = context.getApplicationContext();
             return this;
         }
 

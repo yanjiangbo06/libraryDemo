@@ -12,11 +12,8 @@ import cn.com.venvy.common.report.Report;
 
 public class Platform {
 
-    private static final String TAG = "Platform";
-
     private static Platform sPlatform;
     private PlatformInfo mPlatformInfo;
-    private Context mApplicationContext;
 
     public synchronized static Platform instance() {
         if (sPlatform == null) {
@@ -36,14 +33,8 @@ public class Platform {
         return mPlatformInfo;
     }
 
-    public void setVenvyApplication(IVenvyApplication application) {
-        if (application != null) {
-            mApplicationContext = application.getApplication();
-        }
-    }
-
     public Context getContext() {
-        return mApplicationContext;
+        return mPlatformInfo.getContext();
     }
 
     public void onDestroy() {
