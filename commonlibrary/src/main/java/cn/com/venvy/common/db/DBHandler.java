@@ -5,7 +5,7 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 
-import cn.com.venvy.common.Exception.DBException;
+import cn.com.venvy.common.exception.DBException;
 
 public class DBHandler {
     private DBHelper dbHelper;

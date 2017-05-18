@@ -15,6 +15,7 @@ import cn.com.venvy.common.utils.VenvyLog;
 import cn.com.venvy.okhttp3.Call;
 import cn.com.venvy.okhttp3.Callback;
 import cn.com.venvy.okhttp3.FormBody;
+import cn.com.venvy.okhttp3.Headers;
 import cn.com.venvy.okhttp3.OkHttpClient;
 
 /**
@@ -169,9 +170,13 @@ class OkHttpHelper extends BaseRequestConnect {
     private class OKHttpResponse implements IResponse {
 
         private cn.com.venvy.okhttp3.Response mResponse;
-
         public OKHttpResponse(cn.com.venvy.okhttp3.Response response) {
             mResponse = response;
+        }
+
+        @Override
+        public Object getHeaders() {
+            return mResponse.headers();
         }
 
         @Override

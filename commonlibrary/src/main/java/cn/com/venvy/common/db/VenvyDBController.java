@@ -4,7 +4,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteException;
 
-import cn.com.venvy.common.Exception.DBException;
+import cn.com.venvy.common.exception.DBException;
 
 /**
  * Created by yanjiangbo on 2017/5/14.
@@ -33,9 +33,16 @@ public class VenvyDBController {
         return dbHandler;
     }
 
+    private boolean isNotOpen(){
+       return dbHandler == null || !dbHandler.isOpen();
+    }
+
+    private boolean isOpen(){
+        return !isNotOpen();
+    }
     public void insert(String tableName, String columns[], String[] contents,
                        int startIndex) throws DBException {
-        if (dbHandler == null || !dbHandler.isOpen()) {
+        if (isNotOpen()) {
             return;
         }
         ContentValues contentValues = buildContentValues(columns, startIndex,
@@ -48,22 +55,18 @@ public class VenvyDBController {
     }
 
     public boolean update(String tableName, String columns[], String[] contents, int targetColumnNun, String targetColumnValue, int startIndex) throws DBException {
-        if (dbHandler == null || !dbHandler.isOpen()) {
+        if (isNotOpen()) {
             return false;
         }
         ContentValues contentValues = buildContentValues(columns, startIndex, contents);
         String whereClause = columns[targetColumnNun] + "=?";
         String[] whereArgs = {targetColumnValue};
         int temp = dbHandler.update(tableName, contentValues, whereClause, whereArgs);
-        if (temp >= 1) {
-            return true;
-        } else {
-            return false;
-        }
+        return temp >= 1;
     }
 
     public void delete(String tableName, String columnName, String columnValue) throws DBException {
-        if (dbHandler == null || !dbHandler.isOpen()) {
+        if (isNotOpen()) {
             return;
         }
         String whereClause = columnName + "=?";
@@ -72,7 +75,7 @@ public class VenvyDBController {
     }
 
     public Cursor query(String tableName, String columnName, String... argsValue) {
-        if (dbHandler == null || !dbHandler.isOpen()) {
+        if (isNotOpen()) {
             return null;
         }
         String querySQL = "select * from " + tableName + " where "
@@ -84,7 +87,7 @@ public class VenvyDBController {
 
 
     public Cursor query(String tableName) {
-        if (dbHandler == null || !dbHandler.isOpen()) {
+        if (isNotOpen()) {
             return null;
         }
         String querySQL = "select * from " + tableName;
@@ -111,7 +114,7 @@ public class VenvyDBController {
 
     public boolean update(String tableName, int userIdIndex, int otherIdIndex, String columns[],
                           int startIndex, String[] contents, String otherid, String userid) throws DBException {
-        if (dbHandler == null || !dbHandler.isOpen()) {
+        if (isNotOpen()) {
             return false;
         }
         ContentValues contentValues = buildContentValues(columns, startIndex,
@@ -120,11 +123,7 @@ public class VenvyDBController {
         String[] whereArgs = {userid, otherid};
         int temp = dbHandler.update(tableName, contentValues, whereClause,
                 whereArgs);
-        if (temp >= 1) {
-            return true;
-        } else {
-            return false;
-        }
+        return temp >= 1;
     }
 
     public void onDestroy() {

@@ -76,7 +76,6 @@ public abstract class BaseRequestConnect implements IRequestConnect {
             return false;
         }
     }
-
     @Override
     public boolean abortAll() {
         requestCallBackArray.clear();
