@@ -7,6 +7,7 @@ import android.view.View;
 import cn.com.venvy.Platform;
 import cn.com.venvy.PlatformInfo;
 import cn.com.venvy.common.report.Report;
+import cn.com.venvy.common.report.ReportInfo;
 import cn.com.venvy.common.utils.VenvyLog;
 
 public class MainActivity extends AppCompatActivity {
@@ -24,11 +25,19 @@ public class MainActivity extends AppCompatActivity {
      * 测试Report
      */
     private void startReportTest() {
-        View view = null;
-        try {
-            view.postInvalidate();
-        } catch (Exception e) {
-            Report.report(e);
+//        View view = null;
+//        try {
+//            view.postInvalidate();
+//        } catch (Exception e) {
+//            Report.report(e);
+//        }
+        for (int i = 0; i < 18; i++) {
+            ReportInfo info = new ReportInfo();
+            info.level = Report.ReportLevel.i;
+            info.tag = this.getClass().getName();
+            String demo = "aldfjalsdklaksjgiougq0oitlksdjasjldkgjaklshguw3riutlasdng,ns,.mn,sngkjhruoue890240adjfopu024u02u40tu0jlasdl124utkasjdlfaksldh124owld";
+            info.message = " {i === " + i + "}" + demo;
+            Report.report(info);
         }
     }
 

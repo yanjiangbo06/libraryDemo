@@ -9,11 +9,11 @@ import android.os.Parcelable;
 
 public class ReportInfo implements Parcelable {
 
-    public long id;
+    long id;
     public Report.ReportLevel level;
     public String tag;
     public String message;
-    public String createTime;
+    String createTime;
 
     @Override
     public int describeContents() {

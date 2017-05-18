@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteException;
 
 import cn.com.venvy.common.exception.DBException;
+import cn.com.venvy.common.utils.VenvyLog;
 
 /**
  * Created by yanjiangbo on 2017/5/14.
@@ -33,46 +34,88 @@ public class VenvyDBController {
         return dbHandler;
     }
 
-    private boolean isNotOpen(){
-       return dbHandler == null || !dbHandler.isOpen();
+    private boolean isNotOpen() {
+        return dbHandler == null || !dbHandler.isOpen();
     }
 
-    private boolean isOpen(){
+    public boolean isOpen() {
         return !isNotOpen();
     }
+
     public void insert(String tableName, String columns[], String[] contents,
                        int startIndex) throws DBException {
-        if (isNotOpen()) {
-            return;
+        try {
+            if (isNotOpen()) {
+                return;
+            }
+            dbHandler.beginTransaction();
+            ContentValues contentValues = buildContentValues(columns, startIndex,
+                    contents);
+            long temp = dbHandler.insert(tableName, contentValues);
+            if (-1 == temp) {
+                throw new DBException(getClass().getSimpleName()
+                        + ": insert error ");
+            }
+            dbHandler.commitTransaction();
+        } finally {
+            dbHandler.endTransaction();
         }
-        ContentValues contentValues = buildContentValues(columns, startIndex,
-                contents);
-        long temp = dbHandler.insert(tableName, contentValues);
-        if (-1 == temp) {
-            throw new DBException(getClass().getSimpleName()
-                    + ": insert error ");
-        }
+
     }
 
     public boolean update(String tableName, String columns[], String[] contents, int targetColumnNun, String targetColumnValue, int startIndex) throws DBException {
-        if (isNotOpen()) {
-            return false;
+        try {
+            if (isNotOpen()) {
+                return false;
+            }
+            dbHandler.beginTransaction();
+            ContentValues contentValues = buildContentValues(columns, startIndex, contents);
+            String whereClause = columns[targetColumnNun] + "=?";
+            String[] whereArgs = {targetColumnValue};
+            int temp = dbHandler.update(tableName, contentValues, whereClause, whereArgs);
+            dbHandler.commitTransaction();
+            return temp >= 1;
+        } catch (Exception e) {
+            VenvyLog.e("DBException: ", e);
+        } finally {
+            dbHandler.endTransaction();
         }
-        ContentValues contentValues = buildContentValues(columns, startIndex, contents);
-        String whereClause = columns[targetColumnNun] + "=?";
-        String[] whereArgs = {targetColumnValue};
-        int temp = dbHandler.update(tableName, contentValues, whereClause, whereArgs);
-        return temp >= 1;
+        return false;
     }
 
     public void delete(String tableName, String columnName, String columnValue) throws DBException {
-        if (isNotOpen()) {
-            return;
+        try {
+            if (isNotOpen()) {
+                return;
+            }
+            dbHandler.beginTransaction();
+            String whereClause = columnName + "=?";
+            String whereArgs[] = {columnValue};
+            dbHandler.delete(tableName, whereClause, whereArgs);
+            dbHandler.commitTransaction();
+        } catch (Exception e) {
+            VenvyLog.e("DBException: ", e);
+        } finally {
+            dbHandler.endTransaction();
         }
-        String whereClause = columnName + "=?";
-        String whereArgs[] = {columnValue};
-        dbHandler.delete(tableName, whereClause, whereArgs);
     }
+
+    public void deleteAll(String tableName) throws DBException {
+        try {
+            if (isNotOpen()) {
+                return;
+            }
+            dbHandler.beginTransaction();
+            dbHandler.delete(tableName, null, null);
+            dbHandler.commitTransaction();
+        } catch (Exception e) {
+            VenvyLog.e("DBException: ", e);
+        } finally {
+            dbHandler.endTransaction();
+        }
+    }
+
+
 
     public Cursor query(String tableName, String columnName, String... argsValue) {
         if (isNotOpen()) {
@@ -85,6 +128,12 @@ public class VenvyDBController {
         return cursor;
     }
 
+    public Cursor queryCount(String tableName) {
+        String sql = "select count(*) from " + tableName;
+        Cursor cursor = dbHandler.query(sql, null);
+        return cursor;
+    }
+
 
     public Cursor query(String tableName) {
         if (isNotOpen()) {
@@ -93,6 +142,13 @@ public class VenvyDBController {
         String querySQL = "select * from " + tableName;
         Cursor cursor = dbHandler.query(querySQL);
         return cursor;
+    }
+
+    public Cursor queryAll(String tableName) {
+        if (isNotOpen()) {
+            return null;
+        }
+        return dbHandler.query(tableName, null, null, null, null);
     }
 
 

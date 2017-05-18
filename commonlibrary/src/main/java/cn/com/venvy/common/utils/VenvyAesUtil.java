@@ -57,13 +57,13 @@ public class VenvyAesUtil {
     }
 
     // /** 加密字节数据 **/
-    public static byte[] encrypt(byte[] content, String password, String iv) {
+    public static String encrypt(String password, String iv, byte[] content) {
         try {
             SecretKeySpec key = createKey(password);
             Cipher cipher = Cipher.getInstance(CipherMode);
             cipher.init(Cipher.ENCRYPT_MODE, key, createIV(iv));
             byte[] result = cipher.doFinal(content);
-            return result;
+            return VenvyBase64.encode(result);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -71,16 +71,14 @@ public class VenvyAesUtil {
     }
 
     // /** 加密(结果为16进制字符串) **/
-    public static String encrypt(String key, String iv, String content) {
+    public static String encrypt(String password, String iv, String content) {
         byte[] data = null;
         try {
             data = content.getBytes();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        data = encrypt(data, key, iv);
-        String result = VenvyBase64.encode(data);
-        return result;
+        return encrypt(password, iv, data);
     }
 
     // /** 解密字节数组 **/
