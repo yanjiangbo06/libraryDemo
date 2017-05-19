@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import cn.com.venvy.common.exception.HttpException;
-import cn.com.venvy.okhttp3.ResponseBody;
+import okhttp3.ResponseBody;
 
 /**
  * Created by Arthur on 2017/5/13.
