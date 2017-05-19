@@ -3,6 +3,9 @@ package cn.com.venvy.common.db;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteException;
+import android.support.annotation.NonNull;
+
+import java.util.List;
 
 import cn.com.venvy.common.exception.DBException;
 import cn.com.venvy.common.utils.VenvyLog;
@@ -60,8 +63,31 @@ public class VenvyDBController {
         } finally {
             dbHandler.endTransaction();
         }
-
     }
+
+    public void insert(String tableName, String columns[], @NonNull List<String[]> contents,
+                       int startIndex) throws DBException {
+
+        try {
+            if (isNotOpen()) {
+                return;
+            }
+            dbHandler.beginTransaction();
+            for (String[] content : contents) {
+                ContentValues contentValues = buildContentValues(columns, startIndex,
+                        content);
+                long temp = dbHandler.insert(tableName, contentValues);
+                if (-1 == temp) {
+                    throw new DBException(getClass().getSimpleName()
+                            + ": insert error ");
+                }
+            }
+            dbHandler.commitTransaction();
+        } finally {
+            dbHandler.endTransaction();
+        }
+    }
+
 
     public boolean update(String tableName, String columns[], String[] contents, int targetColumnNun, String targetColumnValue, int startIndex) throws DBException {
         try {
@@ -114,7 +140,6 @@ public class VenvyDBController {
             dbHandler.endTransaction();
         }
     }
-
 
 
     public Cursor query(String tableName, String columnName, String... argsValue) {

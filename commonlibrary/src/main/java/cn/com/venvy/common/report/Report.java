@@ -40,18 +40,15 @@ public class Report {
     //private static final String REPORT_URL = "http://192.168.2.234:8080/api/log";
     private static final String REPORT_SERVER_KEY = "info";
     private static final String KEY_ASYNC_TASK = "Report_report";
-
     private static final IRequestConnect connect = RequestFactory.initConnect(RequestFactory.HttpPlugin.OK_HTTP);
 
     private static VenvyDBController dbController;
 
     private static boolean enable = true;
-
     //最大缓存条数
     private static final int MAX_CACHE_NUM = 10;
-
-    private static final int MAX_DB_CACHE_NUM = 500;  //数据库最大保存条数
-
+    //数据库最大保存条数
+    private static final int MAX_DB_CACHE_NUM = 500;
     //轮询时间间隔
     private static final int POLLING_TIME = 1000 * 60 * 5;
 
@@ -176,9 +173,7 @@ public class Report {
                         @Override
                         public void requestFinish(Request request, IResponse response) {
                             if (!response.isSuccess()) {
-                                for (ReportInfo info : list) {
-                                    cacheReportInfo(info);
-                                }
+                                cacheReportList(list);
                             }
                         }
 
@@ -197,7 +192,26 @@ public class Report {
 
     private static void cacheReportInfo(ReportInfo info) {
         try {
-            getDbController().insert(DBConstants.TABLE_NAMES[DBConstants.TABLE_REPORT], DBConstants.ReportDB.COLUMNS, new String[]{String.valueOf(info.id), String.valueOf(info.level.getValue()), info.createTime, info.tag, info.message}, 1);
+            getDbController().insert(DBConstants.TABLE_NAMES[DBConstants.TABLE_REPORT], DBConstants.ReportDB.COLUMNS, getReportDbContent(info), 1);
+        } catch (DBException e) {
+            VenvyLog.e("DBException : ", e);
+        }
+    }
+
+    private static String[] getReportDbContent(ReportInfo info) {
+        return new String[]{String.valueOf(info.id), String.valueOf(info.level.getValue()), info.createTime, info.tag, info.message};
+    }
+
+    private static void cacheReportList(List<ReportInfo> list) {
+        try {
+            if (list == null || list.size() == 0) {
+                return;
+            }
+            ArrayList<String[]> dbContents = new ArrayList<>();
+            for (ReportInfo info : list) {
+                dbContents.add(getReportDbContent(info));
+            }
+            getDbController().insert(DBConstants.TABLE_NAMES[DBConstants.TABLE_REPORT], DBConstants.ReportDB.COLUMNS, dbContents, 1);
         } catch (DBException e) {
             VenvyLog.e("DBException : ", e);
         }
@@ -275,6 +289,7 @@ public class Report {
                 jsonObject.put("level", reportInfo.level.getValue());
                 jsonObject.put("tag", reportInfo.tag);
                 jsonObject.put("message", reportInfo.message);
+                jsonObject.put("create_time", reportInfo.createTime);
                 jsonArray.put(jsonObject);
             }
         } catch (JSONException e) {

@@ -12,11 +12,12 @@ import cn.com.venvy.common.http.base.IResponse;
 import cn.com.venvy.common.http.base.Request;
 import cn.com.venvy.common.http.base.RequestConnectStatus;
 import cn.com.venvy.common.utils.VenvyLog;
-import cn.com.venvy.okhttp3.Call;
-import cn.com.venvy.okhttp3.Callback;
-import cn.com.venvy.okhttp3.FormBody;
-import cn.com.venvy.okhttp3.Headers;
-import cn.com.venvy.okhttp3.OkHttpClient;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.FormBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Response;
+
 
 /**
  * Created by yanjiangbo on 2017/4/26.
@@ -36,7 +37,7 @@ class OkHttpHelper extends BaseRequestConnect {
 
     @Override
     public void get(final Request request) {
-        final cn.com.venvy.okhttp3.Request.Builder builder = new cn.com.venvy.okhttp3.Request.Builder();
+        final okhttp3.Request.Builder builder = new okhttp3.Request.Builder();
         if (request.mHeaders != null && request.mHeaders.size() > 0) {
             Iterator<Map.Entry<String, String>> it = request.mHeaders.entrySet().iterator();
             while (it.hasNext()) {
@@ -54,7 +55,7 @@ class OkHttpHelper extends BaseRequestConnect {
     @Override
     public void post(Request request) {
 
-        final cn.com.venvy.okhttp3.Request.Builder builder = new cn.com.venvy.okhttp3.Request.Builder();
+        final okhttp3.Request.Builder builder = new okhttp3.Request.Builder();
         if (request.mHeaders != null && request.mHeaders.size() > 0) {
             Iterator<Map.Entry<String, String>> it = request.mHeaders.entrySet().iterator();
             while (it.hasNext()) {
@@ -81,7 +82,7 @@ class OkHttpHelper extends BaseRequestConnect {
 
     @Override
     public void put(Request request) {
-        final cn.com.venvy.okhttp3.Request.Builder builder = new cn.com.venvy.okhttp3.Request.Builder();
+        final okhttp3.Request.Builder builder = new okhttp3.Request.Builder();
         if (request.mHeaders != null && request.mHeaders.size() > 0) {
             Iterator<Map.Entry<String, String>> it = request.mHeaders.entrySet().iterator();
             while (it.hasNext()) {
@@ -108,7 +109,7 @@ class OkHttpHelper extends BaseRequestConnect {
 
     @Override
     public void delete(Request request) {
-        final cn.com.venvy.okhttp3.Request.Builder builder = new cn.com.venvy.okhttp3.Request.Builder();
+        final okhttp3.Request.Builder builder = new okhttp3.Request.Builder();
         if (request.mHeaders != null && request.mHeaders.size() > 0) {
             Iterator<Map.Entry<String, String>> it = request.mHeaders.entrySet().iterator();
             while (it.hasNext()) {
@@ -133,7 +134,7 @@ class OkHttpHelper extends BaseRequestConnect {
         startConnect(builder.build(), request);
     }
 
-    private void startConnect(final cn.com.venvy.okhttp3.Request okRequest, final Request request) {
+    private void startConnect(final okhttp3.Request okRequest, final Request request) {
 
         final IRequestHandler handler = (IRequestHandler) getAllCallback().get(request.mRequestId);
         if (handler != null) {
@@ -143,7 +144,7 @@ class OkHttpHelper extends BaseRequestConnect {
         Call call = okHttpClient.newCall(okRequest);
         call.enqueue(new Callback() {
             @Override
-            public void onResponse(Call call, final cn.com.venvy.okhttp3.Response response) throws IOException {
+            public void onResponse(Call call, final Response response) throws IOException {
 
                 if (handler != null) {
                     handler.requestFinish(request, new OKHttpResponse(response));
@@ -169,8 +170,8 @@ class OkHttpHelper extends BaseRequestConnect {
 
     private class OKHttpResponse implements IResponse {
 
-        private cn.com.venvy.okhttp3.Response mResponse;
-        public OKHttpResponse(cn.com.venvy.okhttp3.Response response) {
+        private Response mResponse;
+        public OKHttpResponse(Response response) {
             mResponse = response;
         }
 
