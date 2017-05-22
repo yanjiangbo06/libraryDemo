@@ -55,6 +55,8 @@ public class Report {
     //轮询时间间隔
     private static final int POLLING_TIME = 1000 * 60 * 5;
 
+    private static Platform sPlatform;
+
     static {
         if (VenvyDebug.getInstance().isDebug()) {
             REPORT_URL = "http://test-log.videojj.com/api/log";
@@ -105,6 +107,7 @@ public class Report {
     }
 
     public static void init(Platform platform) {
+        sPlatform = platform;
         if (!hasInit) {
             connect = RequestFactory.initConnect(RequestFactory.HttpPlugin.OK_HTTP, platform);
             startPolling();
@@ -363,7 +366,7 @@ public class Report {
     private static VenvyDBController getDbController() {
         if (dbController == null || !dbController.isOpen()) {
             try {
-                dbController = new VenvyDBController();
+                dbController = new VenvyDBController(sPlatform.getContext());
             } catch (DBException e) {
                 //此处为了不造成死循环，不做投递操作
                 VenvyLog.e("", e);

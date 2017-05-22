@@ -8,15 +8,10 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import java.util.List;
 
-import cn.com.venvy.Platform;
-
 public class DBHelper extends SQLiteOpenHelper {
 
     private List<String> databaseCreate;
 
-    public DBHelper(String name, int version, List<String> databaseCreate) {
-        this(Platform.instance().getContext(), name, version, databaseCreate, null);
-    }
 
     public DBHelper(Context context, String name, int version, List<String> databaseCreate) {
         this(context, name, version, databaseCreate, null);

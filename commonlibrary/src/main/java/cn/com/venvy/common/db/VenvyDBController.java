@@ -1,6 +1,7 @@
 package cn.com.venvy.common.db;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteException;
 import android.support.annotation.NonNull;
@@ -18,13 +19,13 @@ public class VenvyDBController {
 
     private static DBHandler dbHandler;
 
-    public VenvyDBController() throws DBException {
-        init();
+    public VenvyDBController(Context context) throws DBException {
+        init(context);
     }
 
-    DBHandler init() throws DBException {
+    DBHandler init(Context context) throws DBException {
         if (dbHandler == null) {
-            DBHelper dbHelper = new DBHelper(DBConstants.DATABASE_NAME, DBConstants.DATABASE_VERSION, DBConstants.DB_CREATE_SQL);
+            DBHelper dbHelper = new DBHelper(context, DBConstants.DATABASE_NAME, DBConstants.DATABASE_VERSION, DBConstants.DB_CREATE_SQL);
             dbHandler = new DBHandler(dbHelper);
         }
         if (!dbHandler.isOpen()) {
