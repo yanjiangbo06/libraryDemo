@@ -9,13 +9,17 @@ import android.os.SystemClock;
 public class VenvyDebug {
     private long[] mHits;
     private static VenvyDebug instance;
-    public static volatile boolean venvyDebug = true;
+    private boolean venvyDebug = true;
 
     public static VenvyDebug getInstance() {
         if (null == instance) {
             instance = new VenvyDebug();
         }
         return instance;
+    }
+
+    public boolean isDebug() {
+        return venvyDebug;
     }
 
     private VenvyDebug() {
@@ -33,22 +37,23 @@ public class VenvyDebug {
     /**
      * 关闭log输出
      */
-    public static void disableLogging() {
+    private void disableLogging() {
         venvyDebug = false;
     }
 
     /**
      * 打开log输出
      */
-    public static void enableLogging() {
+    private void enableLogging() {
         venvyDebug = true;
     }
 
     /**
      * 开关debug
      */
-    public static void debugToggle() {
+    public void debugToggle() {
         venvyDebug = !venvyDebug;
+        VenvyLog.i("Debug status has changed, isDebug == " + venvyDebug);
     }
 
     /**
@@ -56,7 +61,7 @@ public class VenvyDebug {
      *
      * @param writeDebugLogs true :打开，false:关闭
      */
-    public static void writeDebugLogs(boolean writeDebugLogs) {
+    private void writeDebugLogs(boolean writeDebugLogs) {
         venvyDebug = writeDebugLogs;
     }
 

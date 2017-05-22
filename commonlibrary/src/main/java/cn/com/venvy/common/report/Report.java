@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import cn.com.venvy.Platform;
 import cn.com.venvy.common.db.DBConstants;
 import cn.com.venvy.common.db.VenvyDBController;
 import cn.com.venvy.common.exception.DBException;
@@ -24,6 +25,7 @@ import cn.com.venvy.common.http.base.Request;
 import cn.com.venvy.common.http.base.RequestConnectStatus;
 import cn.com.venvy.common.utils.VenvyAesUtil;
 import cn.com.venvy.common.utils.VenvyAsyncTaskUtil;
+import cn.com.venvy.common.utils.VenvyDebug;
 import cn.com.venvy.common.utils.VenvyGzipUtil;
 import cn.com.venvy.common.utils.VenvyLog;
 import cn.com.venvy.common.utils.VenvyUIUtil;
@@ -36,13 +38,14 @@ public class Report {
 
     private static final String REPORT_AES_KEY = "8lgK5fr5yatOfHio";
     private static final String REPORT_AES_IV = "lx7eZhVoBEnKXELF";
-    private static final String REPORT_URL = "http://test-log.videojj.com/api/log";
+    private static final String REPORT_URL;
     //private static final String REPORT_URL = "http://192.168.2.234:8080/api/log";
     private static final String REPORT_SERVER_KEY = "info";
     private static final String KEY_ASYNC_TASK = "Report_report";
-    private static final IRequestConnect connect = RequestFactory.initConnect(RequestFactory.HttpPlugin.OK_HTTP);
+    private static IRequestConnect connect;
 
     private static VenvyDBController dbController;
+    private static boolean hasInit = false;
 
     private static boolean enable = true;
     //最大缓存条数
@@ -51,6 +54,14 @@ public class Report {
     private static final int MAX_DB_CACHE_NUM = 500;
     //轮询时间间隔
     private static final int POLLING_TIME = 1000 * 60 * 5;
+
+    static {
+        if (VenvyDebug.getInstance().isDebug()) {
+            REPORT_URL = "http://test-log.videojj.com/api/log";
+        } else {
+            REPORT_URL = "http://log.videojj.com/api/log";
+        }
+    }
 
     public enum ReportLevel {
 
@@ -93,8 +104,14 @@ public class Report {
         }
     }
 
-    public static void init() {
-        startPolling();
+    public static void init(Platform platform) {
+        if (!hasInit) {
+            connect = RequestFactory.initConnect(RequestFactory.HttpPlugin.OK_HTTP, platform);
+            startPolling();
+            hasInit = !hasInit;
+        } else {
+            VenvyLog.w("Report is inited ");
+        }
     }
 
     public static void setReportEnable(boolean able) {
@@ -102,7 +119,16 @@ public class Report {
     }
 
     public static void report(@NonNull final ReportLevel level, @NonNull final String tag, @NonNull final String reportString) {
-        if (!enable || !level.getEnable()) {
+        if (!hasInit) {
+            VenvyLog.w("Report has not be init");
+            return;
+        }
+        if (!enable) {
+            VenvyLog.w("Report has closed");
+            return;
+        }
+        if (!level.getEnable()) {
+            VenvyLog.w("the level is " + level.getValue() + " of Report has closed");
             return;
         }
         ReportInfo reportInfo = new ReportInfo();
@@ -115,7 +141,16 @@ public class Report {
 
     public static void report(@NonNull Exception e) {
 
-        if (!enable || !ReportLevel.e.getEnable()) {
+        if (!hasInit) {
+            VenvyLog.w("Report has not be init");
+            return;
+        }
+        if (!enable) {
+            VenvyLog.w("Report has closed");
+            return;
+        }
+        if (!ReportLevel.e.getEnable()) {
+            VenvyLog.w("the level is 3 of Report has closed");
             return;
         }
         StringBuilder builder = new StringBuilder();
@@ -130,7 +165,16 @@ public class Report {
     }
 
     public static void report(@NonNull final ReportInfo reportInfo) {
-        if (!enable || !reportInfo.level.getEnable()) {
+        if (!hasInit) {
+            VenvyLog.w("Report has not be init");
+            return;
+        }
+        if (!enable) {
+            VenvyLog.w("Report has closed");
+            return;
+        }
+        if (!reportInfo.level.getEnable()) {
+            VenvyLog.w("the level is " + reportInfo.level.getValue() + " of Report has closed");
             return;
         }
         if (TextUtils.isEmpty(reportInfo.tag) || TextUtils.isEmpty(reportInfo.message) || reportInfo.level == null) {
@@ -311,6 +355,7 @@ public class Report {
             @Override
             public void run() {
                 startPolling();
+                VenvyLog.i("start poll Report");
             }
         }, POLLING_TIME);
     }

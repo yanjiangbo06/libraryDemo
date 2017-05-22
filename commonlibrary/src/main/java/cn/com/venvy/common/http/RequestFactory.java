@@ -1,5 +1,6 @@
 package cn.com.venvy.common.http;
 
+import cn.com.venvy.Platform;
 import cn.com.venvy.common.http.base.IRequestConnect;
 
 /**
@@ -13,18 +14,18 @@ public class RequestFactory {
         VOLLEY
     }
 
-    public static IRequestConnect initConnect(HttpPlugin plugin) {
+    public static IRequestConnect initConnect(HttpPlugin plugin, Platform platform) {
         IRequestConnect connect = null;
         switch (plugin) {
             case OK_HTTP:
                 OkHttpHelper okHttpHelper = new OkHttpHelper();
-                okHttpHelper.init();
+                okHttpHelper.init(platform);
                 connect = okHttpHelper;
                 break;
 
             case VOLLEY:
                 VolleyHelper volleyHelper = new VolleyHelper();
-                volleyHelper.init();
+                volleyHelper.init(platform);
                 connect = volleyHelper;
                 break;
         }

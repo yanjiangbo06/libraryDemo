@@ -31,6 +31,10 @@ public class HttpRequest extends Request {
         return get(url, null, params, defaultCacheType);
     }
 
+    public static HttpRequest get(String url, HashMap<String, String> headers, HashMap<String, String> params) {
+        return get(url, headers, params, RequestCacheType.DEFAULT);
+    }
+
     public static HttpRequest get(String url, HashMap<String, String> params) {
         return get(url, null, params, RequestCacheType.DEFAULT);
     }
@@ -51,6 +55,10 @@ public class HttpRequest extends Request {
         return post(url, null, params, defaultCacheType);
     }
 
+    public static HttpRequest post(String url, HashMap<String, String> headers, HashMap<String, String> params) {
+        return post(url, headers, params, RequestCacheType.DEFAULT);
+    }
+
     public static HttpRequest post(String url, HashMap<String, String> params) {
         return post(url, null, params, RequestCacheType.DEFAULT);
     }
@@ -63,6 +71,10 @@ public class HttpRequest extends Request {
         return put(url, null, params, defaultCacheType);
     }
 
+    public static HttpRequest put(String url, HashMap<String, String> headers, HashMap<String, String> params) {
+        return put(url, headers, params, RequestCacheType.DEFAULT);
+    }
+
     public static HttpRequest put(String url, HashMap<String, String> params) {
         return put(url, null, params, RequestCacheType.DEFAULT);
     }
@@ -73,6 +85,10 @@ public class HttpRequest extends Request {
 
     public static HttpRequest delete(String url, HashMap<String, String> params, RequestCacheType defaultCacheType) {
         return delete(url, null, params, defaultCacheType);
+    }
+
+    public static HttpRequest delete(String url, HashMap<String, String> headers, HashMap<String, String> params) {
+        return delete(url, headers, params, RequestCacheType.DEFAULT);
     }
 
     public static HttpRequest delete(String url, HashMap<String, String> params) {

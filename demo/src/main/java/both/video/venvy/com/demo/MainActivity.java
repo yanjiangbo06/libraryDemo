@@ -1,23 +1,23 @@
 package both.video.venvy.com.demo;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.View;
+import android.support.v7.app.AppCompatActivity;
 
 import cn.com.venvy.Platform;
 import cn.com.venvy.PlatformInfo;
 import cn.com.venvy.common.report.Report;
 import cn.com.venvy.common.report.ReportInfo;
-import cn.com.venvy.common.utils.VenvyLog;
 
 public class MainActivity extends AppCompatActivity {
+
+    Platform platform;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         PlatformInfo info = new PlatformInfo.Builder().setThirdPlatform("sss").setServiceVersion("v1").setSdkVersion("v1.0.0").setBuId("OS").setApplicationContext(this.getApplicationContext()).builder();
-        Platform.instance().init(info);
+        platform = new Platform(info);
         startReportTest();
     }
 
@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        Platform.instance().onDestroy();
+        platform.onDestroy();
         super.onDestroy();
     }
 }

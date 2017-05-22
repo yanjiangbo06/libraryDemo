@@ -2,7 +2,6 @@ package cn.com.venvy;
 
 import android.content.Context;
 
-import cn.com.venvy.common.image.ImageFactory;
 import cn.com.venvy.common.observer.ObservableManager;
 import cn.com.venvy.common.report.Report;
 
@@ -12,21 +11,13 @@ import cn.com.venvy.common.report.Report;
 
 public class Platform {
 
-    private static Platform sPlatform;
     private PlatformInfo mPlatformInfo;
 
-    public synchronized static Platform instance() {
-        if (sPlatform == null) {
-            sPlatform = new Platform();
-        }
-        return sPlatform;
-    }
-
-    public void init(PlatformInfo platformInfo) {
+    public Platform (PlatformInfo platformInfo) {
         if (platformInfo != null) {
             mPlatformInfo = platformInfo;
         }
-        Report.init();
+        Report.init(this);
     }
 
     public PlatformInfo getPlatformInfo() {

@@ -2,6 +2,7 @@ package cn.com.venvy.common.http.base;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.support.annotation.NonNull;
 import android.util.SparseArray;
 
 import java.util.HashMap;
@@ -26,8 +27,11 @@ public abstract class BaseRequestConnect implements IRequestConnect {
 
     private HashMap<String, String> mDefaultHeaders;
 
-    public void init() {
-        mDefaultHeaders = buildDefaultUrlHeaders();
+    private Platform platform;
+
+    public void init(@NonNull Platform platform) {
+        mDefaultHeaders = buildDefaultUrlHeaders(platform);
+        this.platform = platform;
     }
 
     @Override
@@ -38,7 +42,7 @@ public abstract class BaseRequestConnect implements IRequestConnect {
         }
         if (VenvyUIUtil.isOnUIThread()) {
             //如果是主线程的调用，每次都处理下头部信息
-            mDefaultHeaders = buildDefaultUrlHeaders();
+            mDefaultHeaders = buildDefaultUrlHeaders(platform);
         }
         if (mDefaultHeaders != null) {
             HashMap<String, String> headers = request.mHeaders;
@@ -59,7 +63,7 @@ public abstract class BaseRequestConnect implements IRequestConnect {
         } else if (request.mRequestType == RequestType.DELETE) {
             delete(request);
         }
-        VenvyLog.i(TAG,"start Request, Url = " + request.url);
+        VenvyLog.i(TAG, "start Request, Url = " + request.url);
     }
 
     @Override
@@ -76,6 +80,7 @@ public abstract class BaseRequestConnect implements IRequestConnect {
             return false;
         }
     }
+
     @Override
     public boolean abortAll() {
         requestCallBackArray.clear();
@@ -126,10 +131,10 @@ public abstract class BaseRequestConnect implements IRequestConnect {
     private static final String LAUGUAGE = "lang";
     private static final String BU = "bu-id";
 
-    private HashMap<String, String> buildDefaultUrlHeaders() {
+    private HashMap<String, String> buildDefaultUrlHeaders(Platform platform) {
         HashMap<String, String> headers = new HashMap<>();
-        PlatformInfo platformInfo = Platform.instance().getPlatformInfo();
-        Context context = Platform.instance().getContext();
+        PlatformInfo platformInfo = platform.getPlatformInfo();
+        Context context = platform.getContext();
         if (context != null) {
             try {
                 headers.put(VERSION, VenvyPackageUtil.getPackageVersion(context));
