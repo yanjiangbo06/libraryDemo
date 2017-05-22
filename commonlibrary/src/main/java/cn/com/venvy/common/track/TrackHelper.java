@@ -2,6 +2,7 @@ package cn.com.venvy.common.track;
 
 import java.util.HashMap;
 
+import cn.com.venvy.Platform;
 import cn.com.venvy.common.http.HttpRequest;
 import cn.com.venvy.common.http.RequestFactory;
 import cn.com.venvy.common.http.base.IRequestConnect;
@@ -15,7 +16,11 @@ public class TrackHelper {
 
     private static final String TRACK_HOST_URL = "http://va.videojj.com/";
     protected static final String TRACK_URL = TRACK_HOST_URL + "track/v4/va.gif";
-    private static final IRequestConnect requestConnect = RequestFactory.initConnect(RequestFactory.HttpPlugin.OK_HTTP);
+    protected static IRequestConnect requestConnect;
+
+    public static void init(Platform platform) {
+        requestConnect = RequestFactory.initConnect(RequestFactory.HttpPlugin.OK_HTTP, platform);
+    }
 
     public static void getAction(HashMap<String, String> params) {
         Request request = HttpRequest.get(TRACK_URL, params);
@@ -27,5 +32,7 @@ public class TrackHelper {
         requestConnect.connect(request, null);
     }
 
-
+    public static void onDestroy() {
+        //TODO
+    }
 }

@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
+import cn.com.venvy.Platform;
 import cn.com.venvy.common.http.HttpRequest;
 import cn.com.venvy.common.http.RequestFactory;
 import cn.com.venvy.common.http.base.IRequestConnect;
@@ -18,6 +19,10 @@ import cn.com.venvy.common.http.base.Request;
 public class VenvyStatUtil {
 
     private static volatile boolean allowStat = true;
+
+    public static void init(Platform platform) {
+        requestConnect = RequestFactory.initConnect(RequestFactory.HttpPlugin.OK_HTTP, platform);
+    }
 
     /**
      * 师傅
@@ -819,7 +824,11 @@ public class VenvyStatUtil {
         httpRequest(url);
     }
 
-    protected static IRequestConnect requestConnect = RequestFactory.initConnect(RequestFactory.HttpPlugin.OK_HTTP);
+    public static void onDestroy() {
+        //TODO
+    }
+
+    protected static IRequestConnect requestConnect;
 
     private void httpRequest(String url) {
         Request request = HttpRequest.get(url);
@@ -834,7 +843,6 @@ public class VenvyStatUtil {
 
             }
         });
-
     }
 
 }

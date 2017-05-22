@@ -10,7 +10,7 @@ import cn.com.venvy.common.report.ReportInfo;
 
 public class MainActivity extends AppCompatActivity {
 
-    Platform platform;
+    public static Platform platform;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

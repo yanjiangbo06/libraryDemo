@@ -4,6 +4,8 @@ import android.content.Context;
 
 import cn.com.venvy.common.observer.ObservableManager;
 import cn.com.venvy.common.report.Report;
+import cn.com.venvy.common.track.TrackHelper;
+import cn.com.venvy.common.utils.VenvyStatUtil;
 
 /**
  * Created by yanjiangbo on 2017/5/2.
@@ -18,6 +20,8 @@ public class Platform {
             mPlatformInfo = platformInfo;
         }
         Report.init(this);
+        VenvyStatUtil.init(this);
+        TrackHelper.init(this);
     }
 
     public PlatformInfo getPlatformInfo() {
@@ -30,6 +34,8 @@ public class Platform {
 
     public void onDestroy() {
         Report.onDestroy();
+        VenvyStatUtil.onDestroy();
+        TrackHelper.onDestroy();
         ObservableManager.getDefaultObserable().removeAllObserver();
     }
 }

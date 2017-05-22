@@ -9,8 +9,6 @@ import org.json.JSONObject;
 import java.util.HashMap;
 
 import cn.com.venvy.common.http.HttpRequest;
-import cn.com.venvy.common.http.RequestFactory;
-import cn.com.venvy.common.http.base.IRequestConnect;
 import cn.com.venvy.common.http.base.IRequestHandler;
 import cn.com.venvy.common.http.base.IResponse;
 import cn.com.venvy.common.http.base.Request;
@@ -45,7 +43,6 @@ public class VideoOsTrackHelper {
     public static void setCacheSize(int cacheSize) {
         mCacheSize = cacheSize;
     }
-
 
 
     /**
