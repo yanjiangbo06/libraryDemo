@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.util.SparseArray;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import cn.com.venvy.Platform;
 import cn.com.venvy.PlatformInfo;
@@ -25,13 +26,13 @@ public abstract class BaseRequestConnect implements IRequestConnect {
 
     private volatile SparseArray<IRequestHandler> requestCallBackArray = new SparseArray<>();
 
-    private HashMap<String, String> mDefaultHeaders;
+    private Map<String, String> mDefaultHeaders;
 
     private Platform platform;
 
     public void init(@NonNull Platform platform) {
-        mDefaultHeaders = buildDefaultUrlHeaders(platform);
         this.platform = platform;
+        mDefaultHeaders = buildDefaultUrlHeaders(platform);
     }
 
     @Override
@@ -45,7 +46,7 @@ public abstract class BaseRequestConnect implements IRequestConnect {
             mDefaultHeaders = buildDefaultUrlHeaders(platform);
         }
         if (mDefaultHeaders != null) {
-            HashMap<String, String> headers = request.mHeaders;
+            Map<String, String> headers = request.mHeaders;
             if (headers != null) {
                 headers.putAll(mDefaultHeaders);
             } else {
@@ -131,8 +132,8 @@ public abstract class BaseRequestConnect implements IRequestConnect {
     private static final String LAUGUAGE = "lang";
     private static final String BU = "bu-id";
 
-    private HashMap<String, String> buildDefaultUrlHeaders(Platform platform) {
-        HashMap<String, String> headers = new HashMap<>();
+    private Map<String, String> buildDefaultUrlHeaders(Platform platform) {
+        Map<String, String> headers = new HashMap<>();
         PlatformInfo platformInfo = platform.getPlatformInfo();
         Context context = platform.getContext();
         if (context != null) {

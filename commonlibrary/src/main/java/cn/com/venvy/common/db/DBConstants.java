@@ -16,14 +16,17 @@ public class DBConstants {
 
     public static List<String> DB_CREATE_SQL;
 
-    public static final String[] TABLE_NAMES = {"report_cache"};
+    public static final String[] TABLE_NAMES = {"report_os_cache", "report_live_cache"};
 
-    public static final int TABLE_REPORT = 0;
+    public static final int TABLE_OS_REPORT = 0;
+    public static final int TABLE_LIVE_REPORT = 1;
 
     static {
         DB_CREATE_SQL = new ArrayList<>();
-        ReportDB report = new ReportDB();
+        ReportDB report = new ReportDB(TABLE_NAMES[TABLE_OS_REPORT]);
         DB_CREATE_SQL.add(report.produceCreateSQL());
+        ReportDB report2 = new ReportDB(TABLE_NAMES[TABLE_LIVE_REPORT]);
+        DB_CREATE_SQL.add(report2.produceCreateSQL());
     }
 
     public static class ReportDB implements ITable {
@@ -33,10 +36,15 @@ public class DBConstants {
         public static final int REPORT_CREATE_TIME = 2;
         public static final int REPORT_TAG = 3;
         public static final int REPORT_MESSAGE = 4;
+        private String mTableName;
+
+        public ReportDB(String tableName) {
+            mTableName = tableName;
+        }
 
         public String produceCreateSQL() {
             final String sql = "CREATE TABLE IF NOT EXISTS "
-                    + TABLE_NAMES[TABLE_REPORT] + "(" + COLUMNS[REPORT_ID]
+                    + mTableName + "(" + COLUMNS[REPORT_ID]
                     + " INTEGER PRIMARY KEY AUTOINCREMENT," + COLUMNS[REPORT_LEVEL]
                     + " INTEGER NOT NULL,"
                     + COLUMNS[REPORT_CREATE_TIME]

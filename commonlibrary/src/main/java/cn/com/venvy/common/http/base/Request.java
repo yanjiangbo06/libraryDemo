@@ -2,6 +2,7 @@ package cn.com.venvy.common.http.base;
 
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.Map;
 
 import cn.com.venvy.common.utils.VenvyIDHelper;
 
@@ -16,14 +17,14 @@ public abstract class Request {
     public int mRequestId;
     public String url;
     public long mTimeOut;
-    public HashMap<String, String> mParams;
-    public HashMap<String, String> mHeaders;
+    public Map<String, String> mParams;
+    public Map<String, String> mHeaders;
     public RequestType mRequestType;
     public RequestCacheType mCacheType;
 
     public Request(String url, RequestType method, InputStream input,
                    RequestCacheType defaultCacheType,
-                   HashMap<String, String> headers, HashMap<String, String> params, long timeout) {
+                   Map<String, String> headers, Map<String, String> params, long timeout) {
         this.url = url;
         this.mTimeOut = timeout <= 0 ? TIME_OUT : timeout;
         this.mParams = params;

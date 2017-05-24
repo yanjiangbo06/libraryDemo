@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
             info.tag = this.getClass().getName();
             String demo = "aldfjalsdklaksjgiougq0oitlksdjasjldkgjaklshguw3riutlasdng,ns,.mn,sngkjhruoue890240adjfopu024u02u40tu0jlasdl124utkasjdlfaksldh124owld";
             info.message = " {i === " + i + "}" + demo;
-            Report.report(info);
+            platform.getReport().report(info);
         }
     }
 

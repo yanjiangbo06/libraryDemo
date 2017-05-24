@@ -20,7 +20,7 @@ import cn.com.venvy.common.utils.VenvyPreferenceHelper;
  * Created by Arthur on 2017/5/9.
  */
 
-public class VideoOsTrackHelper {
+public class VideoOsTrackHelper extends TrackHelper {
     //事件流id
     private static final String TRACK_SID = "sid";
     //Object id
@@ -50,9 +50,9 @@ public class VideoOsTrackHelper {
      *
      * @param trackParams 请求所需参数
      */
-    public static void getAction(TrackParams trackParams) {
+    public void getAction(TrackParams trackParams) {
         Request request = HttpRequest.get(TrackHelper.TRACK_URL, buildGetParams(trackParams));
-        TrackHelper.requestConnect.connect(request, null);
+        requestConnect.connect(request, null);
     }
 
     /**
@@ -60,7 +60,7 @@ public class VideoOsTrackHelper {
      *
      * @param trackParams
      */
-    public static void postAction(final Context context, final TrackParams trackParams) {
+    public void postAction(final Context context, final TrackParams trackParams) {
         //检查数据的有效性
         checkInvalid(trackParams);
         //追加缓存数据
@@ -69,7 +69,7 @@ public class VideoOsTrackHelper {
         doPost(context);
     }
 
-    private static void doPost(final Context context) {
+    private void doPost(final Context context) {
         String cacheJsonStr = VenvyPreferenceHelper.getString(context, TrackConfig.TRACK_PREFERENCE_NAME, TRACK_CACHE_KEY, EMPTY_CACHE);
         try {
             JSONObject json = new JSONObject(cacheJsonStr);
@@ -90,13 +90,13 @@ public class VideoOsTrackHelper {
         }
     }
 
-    private static void initCache(Context context) {
+    private void initCache(Context context) {
         if (!VenvyPreferenceHelper.contains(context, TrackConfig.TRACK_PREFERENCE_NAME, TRACK_CACHE_KEY)) {
             VenvyPreferenceHelper.putString(context, TrackConfig.TRACK_PREFERENCE_NAME, TRACK_CACHE_KEY, EMPTY_CACHE);
         }
     }
 
-    private static void cache(Context context, TrackParams trackParams) {
+    private void cache(Context context, TrackParams trackParams) {
         //如果还没有建立缓存,则初始化之
         initCache(context);
         String cacheJsonStr = VenvyPreferenceHelper.getString(context, TrackConfig.TRACK_PREFERENCE_NAME, TRACK_CACHE_KEY, EMPTY_CACHE);
@@ -112,9 +112,9 @@ public class VideoOsTrackHelper {
         }
     }
 
-    private static void doPost(JSONArray cacheJsonArray, IRequestHandler requestHandler) {
+    private void doPost(JSONArray cacheJsonArray, IRequestHandler requestHandler) {
         Request request = HttpRequest.post(TrackHelper.TRACK_URL, buildPostParams(cacheJsonArray));
-        TrackHelper.requestConnect.connect(request, requestHandler);
+        requestConnect.connect(request, requestHandler);
     }
 
     private static HashMap<String, String> buildPostParams(JSONArray cacheJsonArray) {

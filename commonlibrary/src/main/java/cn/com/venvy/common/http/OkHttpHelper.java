@@ -156,10 +156,10 @@ class OkHttpHelper extends BaseRequestConnect {
 
             @Override
             public void onFailure(Call call, IOException e) {
-                IRequestHandler handler = (IRequestHandler) getAllCallback().get(request.mRequestId);
                 if (handler != null) {
                     handler.requestError(request, e);
                 }
+                removeCallback(request);
                 status = RequestConnectStatus.IDLE;
                 VenvyLog.i(TAG, "request error, url = " + request.url);
             }

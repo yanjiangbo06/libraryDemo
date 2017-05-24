@@ -1,4 +1,4 @@
-package cn.com.venvy.common.utils;
+package cn.com.venvy.common.stat;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -6,31 +6,30 @@ import android.text.TextUtils;
 
 import cn.com.venvy.Platform;
 import cn.com.venvy.common.http.HttpRequest;
-import cn.com.venvy.common.http.RequestFactory;
 import cn.com.venvy.common.http.base.IRequestConnect;
 import cn.com.venvy.common.http.base.IRequestHandler;
 import cn.com.venvy.common.http.base.IResponse;
 import cn.com.venvy.common.http.base.Request;
+import cn.com.venvy.common.utils.VenvyLog;
 
 /***
  * 统计工具类
  * @author John
  */
-public class VenvyStatUtil {
+public class StatHelper {
 
-    private static volatile boolean allowStat = true;
+    private boolean allowStat = true;
 
-    public static void init(Platform platform) {
-        requestConnect = RequestFactory.initConnect(RequestFactory.HttpPlugin.OK_HTTP, platform);
+    public void init(Platform platform) {
+        requestConnect = platform.getRequestConnect();
     }
 
     /**
-     * 师傅
      *
      * @param allowStat
      */
-    public static void requestAllowStatistics(boolean allowStat) {
-        VenvyStatUtil.allowStat = allowStat;
+    public void requestAllowStatistics(boolean allowStat) {
+        this.allowStat = allowStat;
     }
 
     // 确定的版本号
@@ -92,9 +91,9 @@ public class VenvyStatUtil {
         private String channel;
 
 
-        public VenvyStatUtil build() {
+        public StatHelper build() {
             checkInvalid();
-            VenvyStatUtil instance = new VenvyStatUtil();
+            StatHelper instance = new StatHelper();
             instance.mUserAgnet = userAgent;
             instance.mLanguage = language;
             instance.mResolution = resolution;
@@ -178,15 +177,12 @@ public class VenvyStatUtil {
         }
     }
 
-    private VenvyStatUtil() {
-    }
-
     /**
      * true 不允许打点
      *
      * @return
      */
-    private static boolean disallowStat() {
+    private boolean disallowStat() {
         return !allowStat;
     }
 
@@ -824,13 +820,17 @@ public class VenvyStatUtil {
         httpRequest(url);
     }
 
-    public static void onDestroy() {
+    public void onDestroy() {
         //TODO
     }
 
-    protected static IRequestConnect requestConnect;
+    protected IRequestConnect requestConnect;
 
     private void httpRequest(String url) {
+        if (requestConnect == null) {
+            VenvyLog.e("requestConnect is null,do you call init method?");
+            return;
+        }
         Request request = HttpRequest.get(url);
         requestConnect.connect(request, new IRequestHandler.RequestHandlerAdapter() {
             @Override

@@ -16,23 +16,29 @@ public class TrackHelper {
 
     private static final String TRACK_HOST_URL = "http://va.videojj.com/";
     protected static final String TRACK_URL = TRACK_HOST_URL + "track/v4/va.gif";
-    protected static IRequestConnect requestConnect;
+    protected IRequestConnect requestConnect;
 
-    public static void init(Platform platform) {
-        requestConnect = RequestFactory.initConnect(RequestFactory.HttpPlugin.OK_HTTP, platform);
+    public void init(Platform platform) {
+        requestConnect = platform.getRequestConnect();
     }
 
-    public static void getAction(HashMap<String, String> params) {
+    public void getAction(HashMap<String, String> params) {
+        if (requestConnect == null) {
+            return;
+        }
         Request request = HttpRequest.get(TRACK_URL, params);
         requestConnect.connect(request, null);
     }
 
-    public static void postAction(HashMap<String, String> params) {
+    public void postAction(HashMap<String, String> params) {
+        if (requestConnect == null) {
+            return;
+        }
         Request request = HttpRequest.post(TrackHelper.TRACK_URL, params);
         requestConnect.connect(request, null);
     }
 
-    public static void onDestroy() {
+    public void onDestroy() {
         //TODO
     }
 }
